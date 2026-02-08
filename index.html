@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мечты о Путешествиях</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;500&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <script>
+        // Проверка загрузки JavaScript
+        console.log('HTML загружается, JavaScript доступен');
+        
+        // Простая тестовая функция
+        function testFunction() {
+            console.log('Тестовая функция работает');
+        }
+        
+        // Проверка кнопок после загрузки DOM
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM полностью загружен');
+            
+            const loginBtn = document.querySelector('.login-btn');
+            const registerBtn = document.querySelector('.register-btn');
+            
+            console.log('Кнопка входа найдена:', loginBtn);
+            console.log('Кнопка регистрации найдена:', registerBtn);
+            
+            if (loginBtn) {
+                console.log('Добавляем обработчик на кнопку входа');
+            }
+            if (registerBtn) {
+                console.log('Добавляем обработчик на кнопку регистрации');
+            }
+        });
+    </script>
+    <!-- Hero Section с AliveAgain -->
+    <section class="hero-section">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-logo">
+                    <h1 class="hero-title">AliveAgain</h1>
+                    <div class="hero-subtitle">Виртуальные путешествия без границ</div>
+                </div>
+                
+                <div class="hero-message">
+                    <h2 class="hero-call">Давай начнем путешествовать вместе</h2>
+                    <p class="hero-description">
+                        Откройте мир для детей с ограниченной мобильностью через VR-технологии. 
+                        Каждое путешествие - это новая возможность мечтать, исследовать и чувствовать себя свободными.
+                    </p>
+                </div>
+                
+                <div class="hero-cta">
+                    <button class="cta-button" onclick="scrollToCountries()">
+                        Исследовать страны
+                        <svg class="arrow-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="hero-features">
+                    <div class="hero-feature">
+                        <span class="feature-emoji">🌍</span>
+                        <span>50+ стран</span>
+                    </div>
+                    <div class="hero-feature">
+                        <span class="feature-emoji">🥽</span>
+                        <span>VR технологии</span>
+                    </div>
+                    <div class="hero-feature">
+                        <span class="feature-emoji">👥</span>
+                        <span>1000+ детей</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="hero-visual">
+                <div class="floating-elements">
+                    <div class="floating-element element-1">✈️</div>
+                    <div class="floating-element element-2">🌸</div>
+                    <div class="floating-element element-3">🗼</div>
+                    <div class="floating-element element-4">🎭</div>
+                    <div class="floating-element element-5">🏛️</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="scroll-indicator">
+            <div class="scroll-text">Прокрутите вниз</div>
+            <div class="scroll-arrow"></div>
+        </div>
+    </section>
+
+    <!-- Кнопки авторизации -->
+    <div class="auth-buttons">
+        <button class="auth-btn login-btn" onclick="console.log('Кнопка входа нажата'); openLoginModal();">Войти</button>
+        <button class="auth-btn register-btn" onclick="console.log('Кнопка регистрации нажата'); openRegisterModal();">Регистрация</button>
+    </div>
+
+    <!-- Модальное окно входа -->
+    <div id="loginModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
+            <h2>Вход в AliveAgain</h2>
+            <form id="loginForm">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Пароль" required>
+                <button type="submit">Войти</button>
+            </form>
+            <p>Нет аккаунта? <a href="#" onclick="switchToRegister()">Зарегистрироваться</a></p>
+        </div>
+    </div>
+
+    <!-- Модальное окно регистрации -->
+    <div id="registerModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <span class="close-modal" onclick="closeModal('registerModal')">&times;</span>
+            <h2>Регистрация в AliveAgain</h2>
+            <form id="registerForm">
+                <input type="text" id="registerName" placeholder="Имя" required>
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <input type="password" id="registerPassword" placeholder="Пароль" required>
+                <button type="submit">Зарегистрироваться</button>
+            </form>
+            <p>Есть аккаунт? <a href="#" onclick="switchToLogin()">Войти</a></p>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="container">
+            <h1 class="title">Мечты о Путешествиях</h1>
+            <p class="subtitle">Откройте для себя красоту мира в нежных тонах</p>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="container">
+            <div class="countries-grid">
+                <!-- Япония -->
+                <div class="country-card" data-country="japan">
+                    <a href="https://youtu.be/YIo2tJSkidk?si=Yzb4eK2ZzfB90s8z" target="_blank" class="country-link">
+                        <div class="country-image">
+                            <img src="https://resize.tripster.ru/g_luU5kGMuMmG4fN1o0udHBw9yA=/fit-in/1080x1440/filters:no_upscale()/https://cdn.tripster.ru/photos/ab88bae9-9e48-4fa9-ae92-04ea32299330.jpg" 
+                                 alt="Япония">
+                            <div class="play-overlay">
+                                <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="country-content">
+                            <h2 class="country-name">Япония</h2>
+                            <p class="country-description">Страна восходящего солнца, где древние традиции гармонично сочетаются с передовыми технологиями. Япония завораживает своей культурой, кухней и уникальной эстетикой.</p>
+                            <div class="attractions">
+                                <h3>Главные достопримечательности:</h3>
+                                <ul>
+                                    <li>Фудзияма - священная гора и символ Японии</li>
+                                    <li>Киото - древняя столица с тысячами храмов</li>
+                                    <li>Токио - футуристический мегаполис</li>
+                                    <li>Осака - город гастрономических открытий</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Франция -->
+                <div class="country-card" data-country="france">
+                    <a href="https://youtu.be/EkshFcLESPU?si=SDj9VQYjR9_nb154" target="_blank" class="country-link">
+                        <div class="country-image">
+                            <img src="https://as1.ftcdn.net/jpg/01/47/49/76/1000_F_147497684_2GfgE05sJ8hxeYsZZTm6tBu2EHCc98G2.jpg" 
+                                 alt="Франция">
+                            <div class="play-overlay">
+                                <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="country-content">
+                            <h2 class="country-name">Франция</h2>
+                            <p class="country-description">Романтическая страна с богатой историей, изысканной кухней и утонченной культурой. Франция вдохновляет поэтов, художников и влюбленных со всего мира.</p>
+                            <div class="attractions">
+                                <h3>Главные достопримечательности:</h3>
+                                <ul>
+                                    <li>Эйфелева башня - символ Парижа и любви</li>
+                                    <li>Лувр - крупнейший музей мира</li>
+                                    <li>Версаль - роскошный дворец французских королей</li>
+                                    <li>Французская Ривьера - лазурное побережье</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Италия -->
+                <div class="country-card" data-country="italy">
+                    <a href="https://youtu.be/pwivE6bvD8w?si=52ocgv3QkNGHoAH7" target="_blank" class="country-link">
+                        <div class="country-image">
+                            <img src="https://img.freepik.com/premium-photo/scenic-view-sea-against-sky_1048944-25393574.jpg?semt=ais_hybrid&w=740" 
+                                 alt="Италия">
+                            <div class="play-overlay">
+                                <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="country-content">
+                            <h2 class="country-name">Италия</h2>
+                            <p class="country-description">Страна искусства, истории и невероятной красоты. Италия дарит миру великие шедевры архитектуры, живописи и, конечно, гениальную кухню.</p>
+                            <div class="attractions">
+                                <h3>Главные достопримечательности:</h3>
+                                <ul>
+                                    <li>Колизей - амфитеатр древнего Рима</li>
+                                    <li>Венеция - город на воде с каналами</li>
+                                    <li>Флоренция - колыбель Ренессанса</li>
+                                    <li>Рим - вечный город с тысячелетней историей</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Великобритания -->
+                <div class="country-card" data-country="uk">
+                    <a href="https://youtu.be/SNx8B_oE8IY?si=IQwAu6rWwdCnVBSh" target="_blank" class="country-link">
+                        <div class="country-image">
+                            <img src="https://i.pinimg.com/originals/a3/b4/a8/a3b4a8962647ba45905ce683d03a60c6.jpg" 
+                                 alt="Великобритания">
+                            <div class="play-overlay">
+                                <svg class="play-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M8 5v14l11-7z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="country-content">
+                            <h2 class="country-name">Великобритания</h2>
+                            <p class="country-description">Страна с богатейшей историей, великой империей и современными традициями. Великобритания сочетает в себе классическую архитектуру и современный стиль жизни.</p>
+                            <div class="attractions">
+                                <h3>Главные достопримечательности:</h3>
+                                <ul>
+                                    <li>Биг-Бен и Вестминстерский дворец</li>
+                                    <li>Башня Лондона - историческая крепость</li>
+                                    <li>Букингемский дворец - резиденция королевы</li>
+                                    <li>Кембридж и Оксфорд - древние университеты</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- О проекте AliveAgain -->
+            <section class="project-section">
+                <div class="project-container">
+                    <div class="project-header">
+                        <h2 class="project-title">AliveAgain</h2>
+                        <p class="project-subtitle">Виртуальные путешествия без границ</p>
+                    </div>
+                    
+                    <div class="project-content">
+                        <div class="project-description">
+                            <h3>Помощь детям с ограниченной мобильностью</h3>
+                            <p>AliveAgain - это инновационный проект, который помогает детям с ограниченными возможностями передвижения виртуально путешествовать по всему миру. Мы решаем проблему одиночества и ограниченного передвижения с помощью передовых VR-технологий.</p>
+                            
+                            <div class="project-features">
+                                <div class="feature-item">
+                                    <div class="feature-icon">🌍</div>
+                                    <h4>Виртуальные путешествия</h4>
+                                    <p>Погружение в культуры разных стран без выхода из дома</p>
+                                </div>
+                                
+                                <div class="feature-item">
+                                    <div class="feature-icon">🥽</div>
+                                    <h4>VR технологии</h4>
+                                    <p>Реалистичное погружение с помощью виртуальной реальности</p>
+                                </div>
+                                
+                                <div class="feature-item">
+                                    <div class="feature-icon">👥</div>
+                                    <h4>Социальная связь</h4>
+                                    <p>Преодоление одиночества через общие впечатления</p>
+                                </div>
+                                
+                                <div class="feature-item">
+                                    <div class="feature-icon">🎯</div>
+                                    <h4>Доступность</h4>
+                                    <p>Возможность увидеть мир для каждого ребенка</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="project-mission">
+                            <div class="mission-box">
+                                <h3>Наша миссия</h3>
+                                <p>Мы верим, что каждый ребенок заслуживает возможность исследовать мир, узнавать новые культуры и мечтать без ограничений. AliveAgain открывает двери в мир для тех, кто не может путешествовать физически.</p>
+                                <div class="mission-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-number">1000+</span>
+                                        <span class="stat-label">детей помогают</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-number">50+</span>
+                                        <span class="stat-label">стран доступны</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-number">24/7</span>
+                                        <span class="stat-label">доступ к путешествиям</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Мечты о Путешествиях. Создано с любовью к миру.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
