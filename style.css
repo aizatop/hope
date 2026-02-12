@@ -281,6 +281,17 @@ body {
     transform: translateY(-2px) !important;
 }
 
+.standalone-chat-btn {
+    background: linear-gradient(135deg, var(--muted-lavender), var(--soft-pink)) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.standalone-chat-btn:hover {
+    background: linear-gradient(135deg, var(--soft-pink), var(--muted-lavender)) !important;
+    transform: translateY(-2px) !important;
+}
+
 /* Hero Section */
 .hero-section {
     min-height: 100vh;

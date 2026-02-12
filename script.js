@@ -73,6 +73,12 @@ window.switchToLogin = function() {
     openLoginModal();
 }
 
+// Функция открытия отдельной страницы чата
+window.openStandaloneChat = function() {
+    console.log('Открытие отдельной страницы чата');
+    window.open('chat-standalone.html', '_blank');
+}
+
 // Функция открытия публичного чата
 window.openPublicChat = function() {
     console.log('Открытие публичного чата');

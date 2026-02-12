@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат AliveAgain - Общение путешественников</title>
+    <meta name="description" content="Чат для путешественников AliveAgain - общайтесь с единомышленниками со всего мира">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="chat.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>">
+</head>
+<body>
+    <!-- Навигация -->
+    <nav class="chat-nav-header">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <a href="index.html" class="brand-link">
+                    <span class="brand-icon">🌍</span>
+                    <span class="brand-text">AliveAgain</span>
+                </a>
+            </div>
+            
+            <div class="nav-menu">
+                <a href="index.html" class="nav-item">Главная</a>
+                <a href="#" class="nav-item active">Чат</a>
+                <div class="nav-auth" id="navAuth">
+                    <!-- Будет заполнено JavaScript -->
+                </div>
+            </div>
+            
+            <div class="nav-mobile-toggle" onclick="toggleMobileMenu()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero секция чата -->
+    <section class="chat-hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="chat-hero-title">Чат путешественников</h1>
+                <p class="chat-hero-subtitle">Общайтесь с другими участниками AliveAgain со всего мира</p>
+                
+                <div class="chat-features">
+                    <div class="feature-card">
+                        <span class="feature-icon">💬</span>
+                        <h3>Real-time общение</h3>
+                        <p>Мгновенные сообщения без задержек</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">👥</span>
+                        <h3>Сообщество</h3>
+                        <p>Единомышленники со всего мира</p>
+                    </div>
+                    <div class="feature-card">
+                        <span class="feature-icon">🔒</span>
+                        <h3>Безопасность</h3>
+                        <p>Защищенная среда для общения</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Основной контент чата -->
+    <main class="chat-main">
+        <div class="container">
+            <div class="chat-wrapper">
+                <!-- Боковая панель -->
+                <aside class="chat-sidebar">
+                    <div class="sidebar-section">
+                        <h3>🎯 О чате</h3>
+                        <div class="chat-description">
+                            <p>Добро пожаловать в чат AliveAgain! Здесь вы можете:</p>
+                            <ul>
+                                <li>🗣️ Общаться с другими путешественниками</li>
+                                <li>💡 Делиться впечатлениями о странах</li>
+                                <li>🤝 Находить новых друзей</li>
+                                <li>🌍 Узнавать о новых местах</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>📋 Правила чата</h3>
+                        <div class="chat-rules">
+                            <ul>
+                                <li>✅ Будьте вежливы и уважительны</li>
+                                <li>✅ Говорите о путешествиях</li>
+                                <li>✅ Делитесь полезной информацией</li>
+                                <li>❌ Не публикуйте персональные данные</li>
+                                <li>❌ Избегайте спама и рекламы</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>👥 Онлайн пользователи</h3>
+                        <div id="onlineUsersList" class="online-users-list">
+                            <div class="loading-users">Загрузка...</div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <h3>📊 Статистика</h3>
+                        <div class="chat-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Пользователей онлайн:</span>
+                                <span id="onlineCount" class="stat-value">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Сообщений сегодня:</span>
+                                <span id="messageCount" class="stat-value">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Область чата -->
+                <section class="chat-content">
+                    <div class="chat-header">
+                        <div class="chat-title">
+                            <h2>💬 Общий чат</h2>
+                            <span class="chat-status" id="chatStatus">Подключение...</span>
+                        </div>
+                        <div class="chat-actions">
+                            <button class="action-btn" onclick="toggleTheme()" title="Сменить тему">
+                                <span id="themeIcon">🌙</span>
+                            </button>
+                            <button class="action-btn" onclick="toggleSound()" title="Звук уведомлений">
+                                <span id="soundIcon">🔊</span>
+                            </button>
+                            <button class="action-btn" onclick="clearMessages()" title="Очистить чат">
+                                🗑️
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="welcome-message">
+                            <div class="welcome-icon">🌍</div>
+                            <h3>Добро пожаловать в чат AliveAgain!</h3>
+                            <p>Присоединяйтесь к общению с путешественниками со всего мира</p>
+                            <div class="welcome-tips">
+                                <p>💡 <strong>Советы:</strong></p>
+                                <ul>
+                                    <li>Представьтесь, когда впервые заходите в чат</li>
+                                    <li>Расскажите о своих путешествиях</li>
+                                    <li>Задавайте вопросы о странах, которые интересуют</li>
+                                    <li>Будьте дружелюбны и открыты к общению</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chat-input-area">
+                        <div class="user-status-bar" id="userStatusBar">
+                            <span class="status-indicator offline"></span>
+                            <span class="status-text">Гость</span>
+                            <button class="login-btn" onclick="showLoginModal()">Войти для общения</button>
+                        </div>
+
+                        <div class="chat-input-container">
+                            <div class="input-wrapper">
+                                <textarea 
+                                    id="messageInput" 
+                                    placeholder="Введите сообщение..." 
+                                    maxlength="500"
+                                    disabled
+                                    rows="1"
+                                ></textarea>
+                                <div class="input-actions">
+                                    <button class="emoji-btn" onclick="toggleEmoji()" title="Эмодзи">😊</button>
+                                    <button class="send-btn" id="sendButton" onclick="sendMessage()" disabled>
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="input-info">
+                                <span id="charCount">0/500</span>
+                                <span class="input-hint">Enter для отправки, Shift+Enter для новой строки</span>
+                            </div>
+                        </div>
+
+                        <!-- Панель эмодзи -->
+                        <div class="emoji-panel" id="emojiPanel" style="display: none;">
+                            <div class="emoji-grid">
+                                <span class="emoji-item" onclick="insertEmoji('😊')">😊</span>
+                                <span class="emoji-item" onclick="insertEmoji('🌍')">🌍</span>
+                                <span class="emoji-item" onclick="insertEmoji('✈️')">✈️</span>
+                                <span class="emoji-item" onclick="insertEmoji('🗼')">🗼</span>
+                                <span class="emoji-item" onclick="insertEmoji('🏛️')">🏛️</span>
+                                <span class="emoji-item" onclick="insertEmoji('🎭')">🎭</span>
+                                <span class="emoji-item" onclick="insertEmoji('🍜')">🍜</span>
+                                <span class="emoji-item" onclick="insertEmoji('🎌')">🎌</span>
+                                <span class="emoji-item" onclick="insertEmoji('⛩️')">⛩️</span>
+                                <span class="emoji-item" onclick="insertEmoji('🗽')">🗽</span>
+                                <span class="emoji-item" onclick="insertEmoji('🏰')">🏰</span>
+                                <span class="emoji-item" onclick="insertEmoji('🎨')">🎨</span>
+                                <span class="emoji-item" onclick="insertEmoji('📸')">📸</span>
+                                <span class="emoji-item" onclick="insertEmoji('🤝')">🤝</span>
+                                <span class="emoji-item" onclick="insertEmoji('💡')">💡</span>
+                                <span class="emoji-item" onclick="insertEmoji('🎯')">🎯</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Модальное окно входа -->
+    <div id="loginModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
+            <h2>Вход в чат</h2>
+            <form id="loginForm">
+                <input type="email" id="loginEmail" placeholder="Email" required>
+                <input type="password" id="loginPassword" placeholder="Пароль" required>
+                <button type="submit">Войти</button>
+            </form>
+            <p>Нет аккаунта? <a href="#" onclick="switchToRegister()">Зарегистрироваться</a></p>
+        </div>
+    </div>
+
+    <!-- Модальное окно регистрации -->
+    <div id="registerModal" class="auth-modal">
+        <div class="auth-modal-content">
+            <span class="close-modal" onclick="closeModal('registerModal')">&times;</span>
+            <h2>Регистрация в чате</h2>
+            <form id="registerForm">
+                <input type="text" id="registerName" placeholder="Имя" required minlength="2" maxlength="50">
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <input type="password" id="registerPassword" placeholder="Пароль (мин. 6 символов)" required minlength="6" maxlength="100">
+                <button type="submit">Зарегистрироваться</button>
+            </form>
+            <p>Есть аккаунт? <a href="#" onclick="switchToLogin()">Войти</a></p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="chat-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>AliveAgain</h4>
+                    <p>Виртуальные путешествия без границ</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Навигация</h4>
+                    <ul>
+                        <li><a href="index.html">Главная</a></li>
+                        <li><a href="public-chat.html">Публичный чат</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>О проекте</h4>
+                    <p>Откройте мир для детей с ограниченной мобильностью</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 AliveAgain. Создано с любовью к миру.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="chat-standalone.js"></script>
+</body>
+</html>
