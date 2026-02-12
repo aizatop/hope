@@ -6,6 +6,20 @@ const supabaseKey = 'sb_publishable_2fVufYc7abrhKrlZhy2ZJQ_nQqDR7f1';
 if (typeof window.supabase !== 'undefined') {
     var supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
     console.log('Supabase клиент инициализирован');
+    
+    // Тестовая проверка соединения
+    supabase.auth.getSession().then(({ data, error }) => {
+        console.log('Тестовое соединение с Supabase:', { data, error });
+    });
+    
+    // Слушаем изменения сессии
+    supabase.auth.onAuthStateChange((event, session) => {
+        console.log('Состояние авторизации изменилось:', event, session);
+        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+            console.log('Вызываем updateAuthButtons из-за изменения сессии');
+            setTimeout(() => updateAuthButtons(), 100);
+        }
+    });
 } else {
     console.error('Supabase библиотека не загружена');
 }
@@ -59,6 +73,18 @@ window.switchToLogin = function() {
     openLoginModal();
 }
 
+// Функция открытия публичного чата
+window.openPublicChat = function() {
+    console.log('Открытие публичного чата');
+    window.open('public-chat.html', '_blank');
+}
+
+// Функция открытия чата зарегистрированных пользователей
+window.openChat = function() {
+    console.log('Открытие чата');
+    window.open('chat.html', '_blank');
+}
+
 // Функция прокрутки к странам
 window.scrollToCountries = function() {
     console.log('Прокрутка к странам');
@@ -71,46 +97,122 @@ window.scrollToCountries = function() {
     }
 }
 
-// Регистрация пользователя
+// Регистрация пользователя - оптимизированная версия с таймаутами
 async function registerUser(name, email, password) {
+    const startTime = Date.now();
+    const TIMEOUT = 15000; // 15 секунд таймаут
+    
     try {
-        // Регистрация в Supabase Auth
-        const { data, error } = await supabase.auth.signUp({
+        console.log('Начало регистрации пользователя...');
+        
+        // Показываем индикатор загрузки
+        const submitBtn = document.querySelector('#registerForm button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = 'Регистрация...';
+        submitBtn.disabled = true;
+        submitBtn.classList.add('loading');
+        
+        // Создаем Promise с таймаутом
+        const signUpPromise = supabase.auth.signUp({
             email: email,
             password: password,
             options: {
                 data: {
                     name: name
-                }
+                },
+                emailRedirectTo: window.location.origin
             }
         });
+        
+        // Добавляем таймаут
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Превышено время ожидания. Попробуйте еще раз.')), TIMEOUT);
+        });
+        
+        // Ждем результат или таймаут
+        const { data, error } = await Promise.race([signUpPromise, timeoutPromise]);
+
+        // Восстанавливаем кнопку
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+        submitBtn.classList.remove('loading');
 
         if (error) {
-            throw error;
-        }
-
-        // Сохранение дополнительной информации в таблицу users
-        if (data.user) {
-            const { error: profileError } = await supabase
-                .from('users')
-                .insert([
-                    {
-                        id: data.user.id,
-                        name: name,
-                        email: email,
-                        created_at: new Date().toISOString()
-                    }
-                ]);
-
-            if (profileError) {
-                console.error('Ошибка сохранения профиля:', profileError);
+            console.error('Ошибка регистрации:', error);
+            
+            // Обработка конкретных ошибок
+            if (error.message.includes('User already registered')) {
+                return { 
+                    success: false, 
+                    error: 'Пользователь с таким email уже существует. Попробуйте войти.' 
+                };
+            } else if (error.message.includes('Password should be')) {
+                return { 
+                    success: false, 
+                    error: 'Пароль должен содержать минимум 6 символов.' 
+                };
+            } else if (error.message.includes('Invalid email')) {
+                return { 
+                    success: false, 
+                    error: 'Введите корректный email адрес.' 
+                };
+            } else if (error.message.includes('timeout') || error.message.includes('Таймаут')) {
+                return { 
+                    success: false, 
+                    error: 'Сервер долго отвечает. Попробуйте еще раз через несколько секунд.' 
+                };
+            } else {
+                return { 
+                    success: false, 
+                    error: error.message 
+                };
             }
         }
 
-        return { success: true, data };
+        const endTime = Date.now();
+        console.log(`Регистрация выполнена за ${endTime - startTime}мс:`, data);
+
+        // Если пользователь создан и сессия активна (email подтверждение не требуется)
+        if (data.user && !data.user.email_confirmed_at) {
+            return { 
+                success: true, 
+                message: 'Регистрация успешна! Проверьте email для подтверждения.',
+                requiresConfirmation: true
+            };
+        } else if (data.session) {
+            // Мгновенный вход без подтверждения email
+            return { 
+                success: true, 
+                message: 'Регистрация выполнена успешно!',
+                instantLogin: true,
+                session: data.session
+            };
+        }
+
+        return { success: true, message: 'Регистрация успешна!' };
+        
     } catch (error) {
-        console.error('Ошибка регистрации:', error);
-        return { success: false, error: error.message };
+        console.error('Неожиданная ошибка регистрации:', error);
+        
+        // Восстанавливаем кнопку в случае ошибки
+        const submitBtn = document.querySelector('#registerForm button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.textContent = 'Зарегистрироваться';
+            submitBtn.disabled = false;
+            submitBtn.classList.remove('loading');
+        }
+        
+        if (error.message.includes('timeout') || error.message.includes('Таймаут')) {
+            return { 
+                success: false, 
+                error: 'Сервер долго отвечает. Проверьте интернет-соединение и попробуйте еще раз.' 
+            };
+        }
+        
+        return { 
+            success: false, 
+            error: 'Произошла ошибка при регистрации. Попробуйте еще раз.' 
+        };
     }
 }
 
@@ -148,12 +250,28 @@ async function logoutUser() {
 }
 
 // Проверка текущей сессии
-async function checkSession() {
+window.checkSession = async function() {
+    console.log('=== checkSession вызвана ===');
+    
     try {
+        console.log('Проверяем сессию Supabase...');
+        
         const { data: { session }, error } = await supabase.auth.getSession();
+        
+        console.log('Результат getSession:', { session, error });
+        
         if (error) {
+            console.error('Ошибка getSession:', error);
             throw error;
         }
+        
+        if (session && session.user) {
+            console.log('Сессия активна:', session.user.email);
+            console.log('User metadata:', session.user.user_metadata);
+        } else {
+            console.log('Активной сессии нет');
+        }
+        
         return session;
     } catch (error) {
         console.error('Ошибка проверки сессии:', error);
@@ -161,9 +279,13 @@ async function checkSession() {
     }
 }
 
-// Обработчики форм
+// Обновленная функция инициализации
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM загружен, инициализация обработчиков');
+    
+    // Сначала обновляем кнопки авторизации
+    console.log('Вызов updateAuthButtons при загрузке');
+    updateAuthButtons();
     
     // Проверяем наличие элементов
     const registerForm = document.getElementById('registerForm');
@@ -176,22 +298,107 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Форма регистрации
     if (registerForm) {
+        // Валидация в реальном времени
+        const nameInput = document.getElementById('registerName');
+        const emailInput = document.getElementById('registerEmail');
+        const passwordInput = document.getElementById('registerPassword');
+        
+        // Валидация имени
+        nameInput.addEventListener('input', function() {
+            const value = this.value.trim();
+            if (value.length < 2) {
+                this.setCustomValidity('Имя должно содержать минимум 2 символа');
+            } else if (value.length > 50) {
+                this.setCustomValidity('Имя не должно превышать 50 символов');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+        
+        // Валидация email
+        emailInput.addEventListener('input', function() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(this.value)) {
+                this.setCustomValidity('Введите корректный email адрес');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+        
+        // Валидация пароля
+        passwordInput.addEventListener('input', function() {
+            const value = this.value;
+            if (value.length < 6) {
+                this.setCustomValidity('Пароль должен содержать минимум 6 символов');
+            } else if (value.length > 100) {
+                this.setCustomValidity('Пароль не должен превышать 100 символов');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+        
         registerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
-            console.log('Отправка формы регистрации');
             
-            const name = document.getElementById('registerName').value;
-            const email = document.getElementById('registerEmail').value;
+            // Дополнительная клиентская валидация
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
             const password = document.getElementById('registerPassword').value;
+            
+            // Проверяем еще раз на всякий случай
+            if (name.length < 2 || name.length > 50) {
+                alert('Имя должно содержать от 2 до 50 символов');
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Введите корректный email адрес');
+                return;
+            }
+            
+            if (password.length < 6 || password.length > 100) {
+                alert('Пароль должен содержать от 6 до 100 символов');
+                return;
+            }
             
             console.log('Данные регистрации:', { name, email });
             
             const result = await registerUser(name, email, password);
             
             if (result.success) {
-                alert('Регистрация успешна! Проверьте email для подтверждения.');
-                closeModal('registerModal');
-                registerForm.reset();
+                if (result.instantLogin) {
+                    // Мгновенный вход
+                    alert('Регистрация и вход выполнены успешно!');
+                    closeModal('registerModal');
+                    registerForm.reset();
+                    
+                    // Обновляем интерфейс сразу
+                    setTimeout(async () => {
+                        await updateAuthButtons();
+                    }, 500);
+                } else if (result.requiresConfirmation) {
+                    // Требуется подтверждение email
+                    alert(result.message);
+                    closeModal('registerModal');
+                    registerForm.reset();
+                    
+                    // Показываем предложение войти после подтверждения
+                    setTimeout(() => {
+                        if (confirm('Email отправлен! Хотите войти после подтверждения?')) {
+                            openLoginModal();
+                        }
+                    }, 1000);
+                } else {
+                    // Стандартная успешная регистрация
+                    alert(result.message);
+                    closeModal('registerModal');
+                    registerForm.reset();
+                    
+                    setTimeout(async () => {
+                        await updateAuthButtons();
+                    }, 1000);
+                }
             } else {
                 alert('Ошибка регистрации: ' + result.error);
             }
@@ -217,7 +424,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('Вход выполнен успешно!');
                 closeModal('loginModal');
                 loginForm.reset();
-                updateAuthButtons();
+                
+                console.log('Вход успешен, обновляем кнопки...');
+                // Обновляем кнопки после входа
+                setTimeout(async () => {
+                    await updateAuthButtons();
+                }, 500);
             } else {
                 alert('Ошибка входа: ' + result.error);
             }
@@ -249,23 +461,64 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Обновление кнопок авторизации
-async function updateAuthButtons() {
-    const session = await checkSession();
-    const authButtons = document.querySelector('.auth-buttons');
+window.updateAuthButtons = async function() {
+    console.log('=== updateAuthButtons вызвана ===');
     
-    if (session && authButtons) {
-        authButtons.innerHTML = `
-            <span class="user-info">Добро пожаловать, ${session.user.user_metadata?.name || session.user.email}!</span>
-            <button class="auth-btn logout-btn" onclick="handleLogout()">Выйти</button>
-        `;
+    try {
+        const session = await checkSession();
+        const authButtons = document.querySelector('.auth-buttons');
+        
+        console.log('Сессия:', session);
+        console.log('Кнопки авторизации элемент:', authButtons);
+        
+        if (!authButtons) {
+            console.error('Элемент .auth-buttons не найден!');
+            return;
+        }
+        
+        if (session && session.user) {
+            const userName = session.user.user_metadata?.name || 
+                           session.user.email?.split('@')[0] || 
+                           'Пользователь';
+            
+            console.log('Имя пользователя:', userName);
+            console.log('Email пользователя:', session.user.email);
+            console.log('Metadata:', session.user.user_metadata);
+            
+            authButtons.innerHTML = `
+                <span class="user-info">Привет, ${userName}!</span>
+                <button class="auth-btn chat-btn" onclick="openChat()">💬 Чат</button>
+                <button class="auth-btn logout-btn" onclick="handleLogout()">Выйти</button>
+            `;
+            
+            console.log('Кнопки обновлены для авторизованного пользователя');
+            console.log('HTML после обновления:', authButtons.innerHTML);
+        } else {
+            console.log('Пользователь не авторизован, показываем кнопки входа');
+            
+            authButtons.innerHTML = `
+                <button class="auth-btn login-btn" onclick="openLoginModal()">Войти</button>
+                <button class="auth-btn register-btn" onclick="openRegisterModal()">Регистрация</button>
+            `;
+            
+            console.log('Кнопки обновлены для неавторизованного пользователя');
+        }
+    } catch (error) {
+        console.error('Ошибка в updateAuthButtons:', error);
     }
 }
 
 // Обработчик выхода
-async function handleLogout() {
+window.handleLogout = async function() {
+    console.log('handleLogout вызвана');
     const result = await logoutUser();
     if (result.success) {
-        location.reload();
+        console.log('Выход успешен');
+        // Сначала обновляем кнопки, затем перезагружаем страницу
+        updateAuthButtons();
+        setTimeout(() => {
+            location.reload();
+        }, 500);
     } else {
         alert('Ошибка выхода: ' + result.error);
     }

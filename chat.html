@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Чат AliveAgain</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div class="chat-page">
+        <header class="chat-header">
+            <div class="container">
+                <h1>Чат путешественников</h1>
+                <p>Общайтесь с другими участниками AliveAgain</p>
+            </div>
+        </header>
+
+        <main class="chat-main">
+            <div class="container">
+                <div class="chat-container">
+                    <div class="chat-sidebar">
+                        <div class="online-users">
+                            <h3>Онлайн</h3>
+                            <div id="onlineUsersList"></div>
+                        </div>
+                    </div>
+
+                    <div class="chat-content">
+                        <div class="chat-messages" id="chatMessages">
+                            <!-- Сообщения будут загружены здесь -->
+                        </div>
+
+                        <div class="chat-input-container">
+                            <div class="chat-input">
+                                <input type="text" id="messageInput" placeholder="Введите сообщение..." maxlength="500">
+                                <button id="sendButton" onclick="sendMessage()">
+                                    <svg viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="chat-info">
+                                <span id="messageCount">0 сообщений</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="chat.js"></script>
+</body>
+</html>
