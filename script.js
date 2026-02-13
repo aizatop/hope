@@ -73,6 +73,12 @@ window.switchToLogin = function() {
     openLoginModal();
 }
 
+// Функция открытия мессенджера
+window.openMessenger = function() {
+    console.log('Открытие мессенджера');
+    window.open('index-messenger.html', '_blank');
+}
+
 // Функция открытия отдельной страницы чата
 window.openStandaloneChat = function() {
     console.log('Открытие отдельной страницы чата');

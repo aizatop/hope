@@ -281,6 +281,17 @@ body {
     transform: translateY(-2px) !important;
 }
 
+.messenger-btn {
+    background: linear-gradient(135deg, #0084ff, #0056b3) !important;
+    color: white !important;
+    border: none !important;
+}
+
+.messenger-btn:hover {
+    background: linear-gradient(135deg, #0056b3, #0084ff) !important;
+    transform: translateY(-2px) !important;
+}
+
 .standalone-chat-btn {
     background: linear-gradient(135deg, var(--muted-lavender), var(--soft-pink)) !important;
     color: white !important;
