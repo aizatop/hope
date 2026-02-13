@@ -24,6 +24,54 @@ if (typeof window.supabase !== 'undefined') {
     console.error('Supabase библиотека не загружена');
 }
 
+// Глобальные функции для отладки
+window.openLoginModal = function() {
+    console.log('openLoginModal вызвана');
+    const modal = document.getElementById('loginModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        console.log('Модальное окно входа открыто');
+    } else {
+        console.error('Модальное окно входа не найдено');
+    }
+}
+
+window.openRegisterModal = function() {
+    console.log('openRegisterModal вызвана');
+    const modal = document.getElementById('registerModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        console.log('Модальное окно регистрации открыто');
+    } else {
+        console.error('Модальное окно регистрации не найдено');
+    }
+}
+
+window.closeModal = function(modalId) {
+    console.log('closeModal вызвана с ID:', modalId);
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        console.log('Модальное окно закрыто:', modalId);
+    } else {
+        console.error('Модальное окно не найдено:', modalId);
+    }
+}
+
+window.switchToRegister = function() {
+    console.log('switchToRegister вызвана');
+    closeModal('loginModal');
+    openRegisterModal();
+}
+
+window.switchToLogin = function() {
+    console.log('switchToLogin вызвана');
+    closeModal('registerModal');
+    openLoginModal();
+}
 
 // Функция открытия мессенджера
 window.openMessenger = function() {
@@ -1527,9 +1575,248 @@ function animateHeroSection() {
     });
 }
 
+// Обновление кнопок авторизации
+window.updateAuthButtons = async function() {
+    console.log('=== updateAuthButtons вызвана ===');
+    
+    try {
+        const session = await checkSession();
+        const authButtons = document.querySelector('.auth-buttons');
+        
+        console.log('Сессия:', session);
+        console.log('Кнопки авторизации элемент:', authButtons);
+        
+        if (!authButtons) {
+            console.error('Элемент .auth-buttons не найден!');
+            return;
+        }
+        
+        if (session && session.user) {
+            const userName = session.user.user_metadata?.name || 
+                           session.user.email?.split('@')[0] || 
+                           'Пользователь';
+            
+            console.log('Имя пользователя:', userName);
+            console.log('Email пользователя:', session.user.email);
+            console.log('Metadata:', session.user.user_metadata);
+            
+            authButtons.innerHTML = `
+                <span class="user-info">Привет, ${userName}!</span>
+                <button class="auth-btn messenger-btn" onclick="openMessenger()">💬 Мессенджер</button>
+                <button class="auth-btn logout-btn" onclick="handleLogout()">Выйти</button>
+            `;
+            
+            console.log('Кнопки обновлены для авторизованного пользователя');
+            console.log('HTML после обновления:', authButtons.innerHTML);
+        } else {
+            console.log('Пользователь не авторизован, показываем кнопки входа');
+            
+            authButtons.innerHTML = `
+                <button class="auth-btn login-btn" onclick="openLoginModal()">Войти</button>
+                <button class="auth-btn register-btn" onclick="openRegisterModal()">Регистрация</button>
+                <button class="auth-btn messenger-btn" onclick="openMessenger()">💬 Мессенджер</button>
+            `;
+            
+            console.log('Кнопки обновлены для неавторизованного пользователя');
+        }
+    } catch (error) {
+        console.error('Ошибка в updateAuthButtons:', error);
+    }
+}
+
+// Обработчик выхода
+window.handleLogout = async function() {
+    console.log('handleLogout вызвана');
+    const result = await logoutUser();
+    if (result.success) {
+        console.log('Выход успешен');
+        // Сначала обновляем кнопки, затем перезагружаем страницу
+        updateAuthButtons();
+        setTimeout(() => {
+            location.reload();
+        }, 500);
+    } else {
+        alert('Ошибка выхода: ' + result.error);
+    }
+}
+
 // Обновленная функция инициализации
 document.addEventListener('DOMContentLoaded', function() {
-     // Проверяем сессию при загрузке
+    // Проверяем сессию при загрузке
+    updateAuthButtons();
+    
+    // Проверяем наличие элементов
+    const registerForm = document.getElementById('registerForm');
+    const loginForm = document.getElementById('loginForm');
+    const authButtons = document.querySelector('.auth-buttons');
+    
+    console.log('Форма регистрации:', registerForm);
+    console.log('Форма входа:', loginForm);
+    console.log('Кнопки авторизации:', authButtons);
+    
+    // Форма регистрации
+    if (registerForm) {
+        // Валидация в реальном времени
+        const nameInput = document.getElementById('registerName');
+        const emailInput = document.getElementById('registerEmail');
+        const passwordInput = document.getElementById('registerPassword');
+        
+        // Валидация имени
+        nameInput.addEventListener('input', function() {
+            const value = this.value.trim();
+            if (value.length < 2) {
+                this.setCustomValidity('Имя должно содержать минимум 2 символа');
+            } else if (value.length > 50) {
+                this.setCustomValidity('Имя не должно превышать 50 символов');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+        
+        // Валидация email
+        emailInput.addEventListener('input', function() {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(this.value)) {
+                this.setCustomValidity('Введите корректный email адрес');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+        
+        // Валидация пароля
+        passwordInput.addEventListener('input', function() {
+            const value = this.value;
+            if (value.length < 6) {
+                this.setCustomValidity('Пароль должен содержать минимум 6 символов');
+            } else if (value.length > 100) {
+                this.setCustomValidity('Пароль не должен превышать 100 символов');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+        
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Дополнительная клиентская валидация
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            
+            // Проверяем еще раз на всякий случай
+            if (name.length < 2 || name.length > 50) {
+                alert('Имя должно содержать от 2 до 50 символов');
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Введите корректный email адрес');
+                return;
+            }
+            
+            if (password.length < 6 || password.length > 100) {
+                alert('Пароль должен содержать от 6 до 100 символов');
+                return;
+            }
+            
+            console.log('Данные регистрации:', { name, email });
+            
+            const result = await registerUser(name, email, password);
+            
+            if (result.success) {
+                if (result.instantLogin) {
+                    // Мгновенный вход
+                    alert('Регистрация и вход выполнены успешно!');
+                    closeModal('registerModal');
+                    registerForm.reset();
+                    
+                    // Обновляем интерфейс сразу
+                    setTimeout(async () => {
+                        await updateAuthButtons();
+                    }, 500);
+                } else if (result.requiresConfirmation) {
+                    // Требуется подтверждение email
+                    alert(result.message);
+                    closeModal('registerModal');
+                    registerForm.reset();
+                    
+                    // Показываем предложение войти после подтверждения
+                    setTimeout(() => {
+                        if (confirm('Email отправлен! Хотите войти после подтверждения?')) {
+                            openLoginModal();
+                        }
+                    }, 1000);
+                } else {
+                    // Стандартная успешная регистрация
+                    alert(result.message);
+                    closeModal('registerModal');
+                    registerForm.reset();
+                    
+                    setTimeout(async () => {
+                        await updateAuthButtons();
+                    }, 1000);
+                }
+            } else {
+                alert('Ошибка регистрации: ' + result.error);
+            }
+        });
+    } else {
+        console.error('Форма регистрации не найдена');
+    }
+    
+    // Форма входа
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            console.log('Отправка формы входа');
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            console.log('Данные входа:', { email });
+            
+            const result = await loginUser(email, password);
+            
+            if (result.success) {
+                alert('Вход выполнен успешно!');
+                closeModal('loginModal');
+                loginForm.reset();
+                
+                console.log('Вход успешен, обновляем кнопки...');
+                // Обновляем кнопки после входа
+                setTimeout(async () => {
+                    await updateAuthButtons();
+                }, 500);
+            } else {
+                alert('Ошибка входа: ' + result.error);
+            }
+        });
+    } else {
+        console.error('Форма входа не найдена');
+    }
+    
+    // Закрытие модальных окон по клику вне их
+    window.addEventListener('click', function(e) {
+        if (e.target.classList.contains('auth-modal')) {
+            e.target.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    });
+    
+    // Закрытие по ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            const modals = document.querySelectorAll('.auth-modal');
+            modals.forEach(modal => {
+                if (modal.style.display === 'flex') {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        }
+    });
+    
     animateHeroSection();
     animateOnScroll();
     initSmoothScroll();
