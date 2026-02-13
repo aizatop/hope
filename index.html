@@ -89,47 +89,10 @@
 
     <!-- Кнопки авторизации -->
     <div class="auth-buttons">
-        <button class="auth-btn login-btn" onclick="console.log('Кнопка входа нажата'); openLoginModal();">Войти</button>
-        <button class="auth-btn register-btn" onclick="console.log('Кнопка регистрации нажата'); openRegisterModal();">Регистрация</button>
-        <button class="auth-btn chat-btn" onclick="openChat()">💬 Чат</button>
-        <button class="auth-btn public-chat-btn" onclick="openPublicChat()">🌍 Публичный чат</button>
-        <button class="auth-btn standalone-chat-btn" onclick="openStandaloneChat()">💬 Чат-страница</button>
         <button class="auth-btn messenger-btn" onclick="openMessenger()">💬 Мессенджер</button>
-        <button class="auth-btn test-btn" onclick="console.log('Тестовая кнопка нажата'); updateAuthButtons();">Test</button>
     </div>
 
-    <!-- Модальное окно входа -->
-    <div id="loginModal" class="auth-modal">
-        <div class="auth-modal-content">
-            <span class="close-modal" onclick="closeModal('loginModal')">&times;</span>
-            <h2>Вход в AliveAgain</h2>
-            <form id="loginForm">
-                <input type="email" id="loginEmail" placeholder="Email" required>
-                <input type="password" id="loginPassword" placeholder="Пароль" required>
-                <button type="submit">Войти</button>
-            </form>
-            <p>Нет аккаунта? <a href="#" onclick="switchToRegister()">Зарегистрироваться</a></p>
-        </div>
-    </div>
-
-    <!-- Модальное окно регистрации -->
-    <div id="registerModal" class="auth-modal">
-        <div class="auth-modal-content">
-            <span class="close-modal" onclick="closeModal('registerModal')">&times;</span>
-            <h2>Регистрация в AliveAgain</h2>
-            <form id="registerForm">
-                <input type="text" id="registerName" placeholder="Имя" required minlength="2" maxlength="50">
-                <input type="email" id="registerEmail" placeholder="Email" required>
-                <input type="password" id="registerPassword" placeholder="Пароль (мин. 6 символов)" required minlength="6" maxlength="100">
-                <div class="password-requirements">
-                    <small>Пароль должен содержать минимум 6 символов</small>
-                </div>
-                <button type="submit">Зарегистрироваться</button>
-            </form>
-            <p>Есть аккаунт? <a href="#" onclick="switchToLogin()">Войти</a></p>
-        </div>
-    </div>
-
+    
     <header class="header">
         <div class="container">
             <h1 class="title">Мечты о Путешествиях</h1>

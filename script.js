@@ -24,54 +24,6 @@ if (typeof window.supabase !== 'undefined') {
     console.error('Supabase библиотека не загружена');
 }
 
-// Глобальные функции для отладки
-window.openLoginModal = function() {
-    console.log('openLoginModal вызвана');
-    const modal = document.getElementById('loginModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        console.log('Модальное окно входа открыто');
-    } else {
-        console.error('Модальное окно входа не найдено');
-    }
-}
-
-window.openRegisterModal = function() {
-    console.log('openRegisterModal вызвана');
-    const modal = document.getElementById('registerModal');
-    if (modal) {
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        console.log('Модальное окно регистрации открыто');
-    } else {
-        console.error('Модальное окно регистрации не найдено');
-    }
-}
-
-window.closeModal = function(modalId) {
-    console.log('closeModal вызвана с ID:', modalId);
-    const modal = document.getElementById(modalId);
-    if (modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-        console.log('Модальное окно закрыто:', modalId);
-    } else {
-        console.error('Модальное окно не найдено:', modalId);
-    }
-}
-
-window.switchToRegister = function() {
-    console.log('switchToRegister вызвана');
-    closeModal('loginModal');
-    openRegisterModal();
-}
-
-window.switchToLogin = function() {
-    console.log('switchToLogin вызвана');
-    closeModal('registerModal');
-    openLoginModal();
-}
 
 // Функция открытия мессенджера
 window.openMessenger = function() {
@@ -85,20 +37,6 @@ window.openMessenger = function() {
     }
 }
 
-// Функция открытия отдельной страницы чата
-function openStandaloneChat() {
-    window.location.href = 'chat-standalone.html';
-}
-
-// Функция открытия публичного чата
-function openPublicChat() {
-    window.location.href = 'public-chat.html';
-}
-
-// Функция открытия чата зарегистрированных пользователей
-function openChat() {
-    window.location.href = 'chat.html';
-}
 
 // JavaScript для интегрированного чата
 const chatSupabaseUrl = 'https://eybvtbskxktwurotecjl.supabase.co';
@@ -1029,10 +967,6 @@ window.checkSession = async function() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM загружен, инициализация обработчиков');
     
-    // Сначала обновляем кнопки авторизации
-    console.log('Вызов updateAuthButtons при загрузке');
-    updateAuthButtons();
-    
     // Проверяем наличие элементов
     const registerForm = document.getElementById('registerForm');
     const loginForm = document.getElementById('loginForm');
@@ -1116,8 +1050,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (result.instantLogin) {
                     // Мгновенный вход
                     alert('Регистрация и вход выполнены успешно!');
-                    closeModal('registerModal');
-                    registerForm.reset();
+                                        registerForm.reset();
                     
                     // Обновляем интерфейс сразу
                     setTimeout(async () => {
@@ -1126,7 +1059,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else if (result.requiresConfirmation) {
                     // Требуется подтверждение email
                     alert(result.message);
-                    closeModal('registerModal');
                     registerForm.reset();
                     
                     // Показываем предложение войти после подтверждения
@@ -1138,8 +1070,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                     // Стандартная успешная регистрация
                     alert(result.message);
-                    closeModal('registerModal');
-                    registerForm.reset();
+                                        registerForm.reset();
                     
                     setTimeout(async () => {
                         await updateAuthButtons();
@@ -1168,8 +1099,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (result.success) {
                 alert('Вход выполнен успешно!');
-                closeModal('loginModal');
-                loginForm.reset();
+                                loginForm.reset();
                 
                 console.log('Вход успешен, обновляем кнопки...');
                 // Обновляем кнопки после входа
@@ -1206,69 +1136,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 
-// Обновление кнопок авторизации
-window.updateAuthButtons = async function() {
-    console.log('=== updateAuthButtons вызвана ===');
-    
-    try {
-        const session = await checkSession();
-        const authButtons = document.querySelector('.auth-buttons');
-        
-        console.log('Сессия:', session);
-        console.log('Кнопки авторизации элемент:', authButtons);
-        
-        if (!authButtons) {
-            console.error('Элемент .auth-buttons не найден!');
-            return;
-        }
-        
-        if (session && session.user) {
-            const userName = session.user.user_metadata?.name || 
-                           session.user.email?.split('@')[0] || 
-                           'Пользователь';
-            
-            console.log('Имя пользователя:', userName);
-            console.log('Email пользователя:', session.user.email);
-            console.log('Metadata:', session.user.user_metadata);
-            
-            authButtons.innerHTML = `
-                <span class="user-info">Привет, ${userName}!</span>
-                <button class="auth-btn chat-btn" onclick="openChat()">💬 Чат</button>
-                <button class="auth-btn logout-btn" onclick="handleLogout()">Выйти</button>
-            `;
-            
-            console.log('Кнопки обновлены для авторизованного пользователя');
-            console.log('HTML после обновления:', authButtons.innerHTML);
-        } else {
-            console.log('Пользователь не авторизован, показываем кнопки входа');
-            
-            authButtons.innerHTML = `
-                <button class="auth-btn login-btn" onclick="openLoginModal()">Войти</button>
-                <button class="auth-btn register-btn" onclick="openRegisterModal()">Регистрация</button>
-            `;
-            
-            console.log('Кнопки обновлены для неавторизованного пользователя');
-        }
-    } catch (error) {
-        console.error('Ошибка в updateAuthButtons:', error);
-    }
-}
 
-// Обработчик выхода
-window.handleLogout = async function() {
-    console.log('handleLogout вызвана');
-    const result = await logoutUser();
-    if (result.success) {
-        console.log('Выход успешен');
-        // Сначала обновляем кнопки, затем перезагружаем страницу
-        updateAuthButtons();
-        setTimeout(() => {
-            location.reload();
-        }, 500);
-    } else {
-        alert('Ошибка выхода: ' + result.error);
-    }
-}
 
 // Модальное окно для видео
 function createModal() {
@@ -1284,16 +1152,7 @@ function createModal() {
     `;
     document.body.appendChild(modal);
     
-    // Закрытие модального окна
-    const closeBtn = modal.querySelector('.close-modal');
-    closeBtn.addEventListener('click', closeModal);
-    
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-    
+        
     return modal;
 }
 
@@ -1324,23 +1183,6 @@ function openVideo(videoUrl) {
     document.body.style.overflow = 'hidden';
 }
 
-// Закрытие модального окна
-function closeModal() {
-    const modal = document.querySelector('.modal');
-    if (modal) {
-        const videoFrame = document.getElementById('video-frame');
-        videoFrame.src = '';
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-}
-
-// Закрытие модального окна по ESC
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeModal();
-    }
-});
 
 // Анимация появления карточек при прокрутке
 function animateOnScroll() {
@@ -1687,7 +1529,7 @@ function animateHeroSection() {
 
 // Обновленная функция инициализации
 document.addEventListener('DOMContentLoaded', function() {
-    updateAuthButtons(); // Проверяем сессию при загрузке
+     // Проверяем сессию при загрузке
     animateHeroSection();
     animateOnScroll();
     initSmoothScroll();
