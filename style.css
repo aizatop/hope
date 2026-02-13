@@ -982,12 +982,16 @@ html {
 .country-card:nth-child(3) { animation-delay: 0.3s; }
 .country-card:nth-child(4) { animation-delay: 0.4s; }
 
-/* Project Section */
+/* Rose-Beige Project Section */
 .project-section {
-    margin-top: 80px;
+    margin-top: 40px;
     padding: 60px 0;
-    background: linear-gradient(135deg, var(--soft-cream) 0%, var(--muted-lavender) 50%, var(--primary-rose) 100%);
-    border-radius: 30px;
+    background: linear-gradient(135deg, 
+        var(--soft-cream) 0%, 
+        var(--warm-beige) 25%, 
+        var(--dusty-rose) 50%, 
+        var(--accent-rose) 75%, 
+        var(--warm-gray) 100%);
     position: relative;
     overflow: hidden;
 }
@@ -995,38 +999,34 @@ html {
 .project-section::before {
     content: '';
     position: absolute;
-    top: -50%;
-    right: -10%;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, var(--soft-pink) 0%, transparent 70%);
-    border-radius: 50%;
-    opacity: 0.3;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(212, 165, 165, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 219, 98, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(255, 243, 224, 0.05) 0%, transparent 50%);
+    animation: projectFloatingGradient 25s ease-in-out infinite;
 }
 
-.project-section::after {
-    content: '';
-    position: absolute;
-    bottom: -30%;
-    left: -5%;
-    width: 250px;
-    height: 250px;
-    background: radial-gradient(circle, var(--warm-beige) 0%, transparent 70%);
-    border-radius: 50%;
-    opacity: 0.3;
-}
-
-.project-container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 20px;
-    position: relative;
-    z-index: 1;
-}
-
-.project-header {
-    text-align: center;
-    margin-bottom: 50px;
+@keyframes projectFloatingGradient {
+    0%, 100% { 
+        transform: translate(0, 0) rotate(0deg); 
+        opacity: 0.6;
+    }
+    25% { 
+        transform: translate(15px, -10px) rotate(90deg); 
+        opacity: 0.8;
+    }
+    50% { 
+        transform: translate(-10px, 15px) rotate(180deg); 
+        opacity: 0.7;
+    }
+    75% { 
+        transform: translate(-15px, 10px) rotate(270deg); 
+        opacity: 0.5;
+    }
 }
 
 .project-container {
@@ -1097,12 +1097,6 @@ html {
         transparent);
     opacity: 0;
     transition: opacity 0.3s ease;
-}
-
-.feature-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(212, 165, 165, 0.3);
-    border-color: rgba(212, 165, 165, 0.4);
 }
 
 .feature-item:hover::before {
