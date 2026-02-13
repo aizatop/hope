@@ -257,12 +257,76 @@ body {
 }
 
 .logout-btn {
-    background: var(--text-light) !important;
+    background: linear-gradient(135deg, #e74c3c, #c0392b) !important;
     color: white !important;
+    border: none !important;
+    font-weight: 600 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 15px rgba(231, 76, 60, 0.2) !important;
+}
+
+.logout-btn::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.2), 
+        transparent) !important;
+    opacity: 0 !important;
+    transition: opacity 0.3s ease !important;
 }
 
 .logout-btn:hover {
-    background: var(--text-dark) !important;
+    background: linear-gradient(135deg, #c0392b, #a02821) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3) !important;
+}
+
+.logout-btn:hover::before {
+    opacity: 1 !important;
+}
+
+.user-info {
+    padding: 12px 20px !important;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.9), 
+        rgba(248, 250, 252, 0.8)) !important;
+    border-radius: 25px !important;
+    color: var(--text-dark) !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 15px var(--shadow-soft) !important;
+    border: 2px solid var(--dusty-rose) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    backdrop-filter: blur(10px) !important;
+    position: relative !important;
+    overflow: hidden !important;
+}
+
+.user-info::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    height: 1px !important;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(212, 165, 165, 0.4), 
+        transparent) !important;
+    animation: shimmer 3s ease-in-out infinite !important;
+}
+
+.user-info:hover {
+    background: var(--dusty-rose) !important;
+    color: white !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(212, 165, 165, 0.3) !important;
 }
 
 /* Hero Section */
@@ -717,6 +781,16 @@ body {
         font-size: 0.8rem;
     }
     
+    .user-info {
+        padding: 10px 16px !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .logout-btn {
+        padding: 10px 16px !important;
+        font-size: 0.8rem !important;
+    }
+    
     .auth-modal-content {
         padding: 30px 20px;
         margin: 20px;
@@ -740,6 +814,16 @@ body {
     .auth-btn {
         padding: 8px 16px;
         font-size: 0.8rem;
+    }
+    
+    .user-info {
+        padding: 8px 12px !important;
+        font-size: 0.75rem !important;
+    }
+    
+    .logout-btn {
+        padding: 8px 12px !important;
+        font-size: 0.75rem !important;
     }
 }
 

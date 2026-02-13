@@ -16,8 +16,8 @@ if (typeof window.supabase !== 'undefined') {
     supabase.auth.onAuthStateChange((event, session) => {
         console.log('Состояние авторизации изменилось:', event, session);
         if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
-            console.log('Вызываем updateAuthButtons из-за изменения сессии');
-            setTimeout(() => updateAuthButtons(), 100);
+            console.log('Вызываем updateAuthButtons из-за изменения сессии СРАЗУ');
+            updateAuthButtons(); // Убираем задержку
         }
     });
 } else {
@@ -1731,10 +1731,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     closeModal('registerModal');
                     registerForm.reset();
                     
-                    // Обновляем интерфейс сразу
-                    setTimeout(async () => {
-                        await updateAuthButtons();
-                    }, 500);
+                    // Обновляем интерфейс СРАЗУ без задержки
+                    await updateAuthButtons();
                 } else if (result.requiresConfirmation) {
                     // Требуется подтверждение email
                     alert(result.message);
@@ -1753,9 +1751,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     closeModal('registerModal');
                     registerForm.reset();
                     
-                    setTimeout(async () => {
-                        await updateAuthButtons();
-                    }, 1000);
+                    // Обновляем интерфейс СРАЗУ без задержки
+                    await updateAuthButtons();
                 }
             } else {
                 alert('Ошибка регистрации: ' + result.error);
@@ -1783,11 +1780,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 closeModal('loginModal');
                 loginForm.reset();
                 
-                console.log('Вход успешен, обновляем кнопки...');
-                // Обновляем кнопки после входа
-                setTimeout(async () => {
-                    await updateAuthButtons();
-                }, 500);
+                console.log('Вход успешен, обновляем кнопки СРАЗУ...');
+                // Обновляем кнопки после входа СРАЗУ без задержки
+                await updateAuthButtons();
             } else {
                 alert('Ошибка входа: ' + result.error);
             }
