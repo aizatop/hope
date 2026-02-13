@@ -188,27 +188,31 @@ function updateChatUserInterface() {
         sendButton.disabled = false;
         chatStatus.textContent = 'Подключено к чату';
     } else {
-        // Гость
+        // Гость с возможностью чата
+        const guestName = 'Гость' + Math.floor(Math.random() * 1000);
+        
         userProfile.innerHTML = `
             <div class="chat-user-avatar">
                 <span class="avatar-placeholder">?</span>
             </div>
             <div class="chat-user-info">
-                <div class="chat-user-name">Гость</div>
-                <div class="chat-user-status">Не в сети</div>
+                <div class="chat-user-name">${guestName}</div>
+                <div class="chat-user-status">Гость</div>
             </div>
             <button class="chat-auth-btn" onclick="showChatAuthModal()">Войти</button>
         `;
         
         userStatusBar.innerHTML = `
-            <span class="chat-status-indicator offline"></span>
-            <span class="chat-status-text">Гость</span>
-            <button class="chat-login-btn" onclick="showChatAuthModal()">Войти для общения</button>
+            <span class="chat-status-indicator online"></span>
+            <span class="chat-status-text">${guestName}</span>
         `;
         
-        messageInput.disabled = true;
-        sendButton.disabled = true;
-        chatStatus.textContent = 'Требуется вход для отправки сообщений';
+        messageInput.disabled = false;
+        sendButton.disabled = false;
+        chatStatus.textContent = 'Подключено к чату как гость';
+        
+        // Устанавливаем имя гостя для отправки сообщений
+        window.chatGuestName = guestName;
     }
 }
 
@@ -360,20 +364,23 @@ function displayChatMessages(messages) {
     messagesArea.innerHTML = '';
     
     if (messages.length === 0) {
+        const isGuest = !chatCurrentUser;
         messagesArea.innerHTML = `
             <div class="chat-welcome-message">
                 <div class="chat-welcome-icon">🌍</div>
                 <h3>Добро пожаловать в чат AliveAgain!</h3>
-                <p>Присоединяйтесь к общению с путешественниками со всего мира</p>
+                <p>${isGuest ? 'Вы вошли как гость. Можете общаться без регистрации!' : 'Присоединяйтесь к общению с путешественниками со всего мира'}</p>
                 <div class="chat-welcome-tips">
                     <p>💡 <strong>Советы:</strong></p>
                     <ul>
-                        <li>Представьтесь, когда впервые заходите в чат</li>
+                        <li>${isGuest ? 'Вы общаетесь как гость. Для регистрации нажмите "Войти"' : 'Представьтесь, когда впервые заходите в чат'}</li>
                         <li>Расскажите о своих путешествиях</li>
                         <li>Задавайте вопросы о странах, которые интересуют</li>
                         <li>Будьте дружелюбны и открыты к общению</li>
+                        ${isGuest ? '<li>Регистрация даст доступ к дополнительным функциям</li>' : ''}
                     </ul>
                 </div>
+                ${isGuest ? '<p style="margin-top: 1rem; color: #667eea;"><strong>💬 Начните общаться прямо сейчас!</strong></p>' : ''}
             </div>
         `;
         return;
@@ -425,22 +432,30 @@ function createChatMessageElement(message) {
 
 // Отправка сообщения чата
 async function sendChatMessage() {
-    if (!chatCurrentUser) {
-        showChatAuthModal();
-        return;
-    }
-    
     const input = document.getElementById('chatMessageInput');
     const text = input.value.trim();
     
     if (!text) return;
     
     try {
+        // Определяем данные пользователя (авторизованный или гость)
+        let userId, userName;
+        
+        if (chatCurrentUser) {
+            // Авторизованный пользователь
+            userId = chatCurrentUser.id;
+            userName = chatCurrentUser.name;
+        } else {
+            // Гость
+            userId = 'guest_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            userName = window.chatGuestName || 'Гость';
+        }
+        
         const { data, error } = await chatSupabase
             .from('messages')
             .insert({
-                user_id: chatCurrentUser.id,
-                user_name: chatCurrentUser.name,
+                user_id: userId,
+                user_name: userName,
                 text: text,
                 chat_id: chatCurrentChat,
                 created_at: new Date().toISOString()
@@ -648,22 +663,34 @@ async function handleChatLogout() {
 
 // Обновление онлайн статуса чата
 async function updateChatOnlineStatus(isOnline) {
-    if (!chatCurrentUser) return;
+    if (!chatCurrentUser && !window.chatGuestName) return;
     
     try {
+        let userId, userName;
+        
+        if (chatCurrentUser) {
+            // Авторизованный пользователь
+            userId = chatCurrentUser.id;
+            userName = chatCurrentUser.name;
+        } else {
+            // Гость
+            userId = 'guest_' + window.chatGuestName;
+            userName = window.chatGuestName;
+        }
+        
         if (isOnline) {
             await chatSupabase
                 .from('online_users')
                 .upsert({
-                    user_id: chatCurrentUser.id,
-                    user_name: chatCurrentUser.name,
+                    user_id: userId,
+                    user_name: userName,
                     last_seen: new Date().toISOString()
                 });
         } else {
             await chatSupabase
                 .from('online_users')
                 .delete()
-                .eq('user_id', chatCurrentUser.id);
+                .eq('user_id', userId);
         }
     } catch (error) {
         console.error('Ошибка обновления онлайн статуса чата:', error);
@@ -791,7 +818,7 @@ window.addEventListener('beforeunload', async function() {
 
 // Периодическое обновление онлайн статуса
 setInterval(async function() {
-    if (chatCurrentUser) {
+    if (chatCurrentUser || window.chatGuestName) {
         await updateChatOnlineStatus(true);
     }
 }, 60000); // Каждую минуту
