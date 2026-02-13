@@ -75,6 +75,14 @@ window.switchToLogin = function() {
 
 // Функция открытия мессенджера
 window.openMessenger = function() {
+    console.log('Прокрутка к чату');
+    const chatSection = document.getElementById('chat');
+    if (chatSection) {
+        chatSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
 }
 
 // Функция открытия отдельной страницы чата
