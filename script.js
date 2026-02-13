@@ -92,6 +92,710 @@ function openChat() {
     window.location.href = 'chat.html';
 }
 
+// JavaScript для интегрированного чата
+const chatSupabaseUrl = 'https://eybvtbskxktwurotecjl.supabase.co';
+const chatSupabaseKey = 'sb_publishable_2fVufYc7abrhKrlZhy2ZJQ_nQqDR7f1';
+const chatSupabase = window.supabase.createClient(chatSupabaseUrl, chatSupabaseKey);
+
+// Глобальные переменные для чата
+let chatCurrentUser = null;
+let chatMessagesSubscription = null;
+let chatOnlineUsersSubscription = null;
+let chatMessageCount = 0;
+let chatSoundEnabled = true;
+let chatDarkTheme = false;
+let chatCurrentChat = 'general';
+
+// Инициализация чата при загрузке страницы
+document.addEventListener('DOMContentLoaded', function() {
+    initializeIntegratedChat();
+});
+
+// Инициализация интегрированного чата
+function initializeIntegratedChat() {
+    console.log('Инициализация интегрированного чата...');
+    
+    // Проверяем авторизацию
+    checkChatAuthStatus();
+    
+    // Настраиваем обработчики
+    setupChatEventListeners();
+    
+    // Загружаем сообщения
+    loadChatMessages();
+    
+    // Подписываемся на обновления
+    subscribeToChatUpdates();
+    
+    console.log('Интегрированный чат инициализирован');
+}
+
+// Проверка статуса авторизации для чата
+async function checkChatAuthStatus() {
+    try {
+        const { data: { session }, error } = await chatSupabase.auth.getSession();
+        
+        if (error) {
+            console.error('Ошибка проверки сессии чата:', error);
+            chatCurrentUser = null;
+        } else if (session && session.user) {
+            chatCurrentUser = {
+                id: session.user.id,
+                name: session.user.user_metadata?.name || session.user.email.split('@')[0],
+                email: session.user.email
+            };
+            console.log('Пользователь чата авторизован:', chatCurrentUser);
+        } else {
+            chatCurrentUser = null;
+            console.log('Пользователь чата не авторизован');
+        }
+        
+        updateChatUserInterface();
+    } catch (error) {
+        console.error('Ошибка при проверке авторизации чата:', error);
+        chatCurrentUser = null;
+        updateChatUserInterface();
+    }
+}
+
+// Обновление интерфейса пользователя чата
+function updateChatUserInterface() {
+    const userProfile = document.getElementById('chatUserProfile');
+    const userStatusBar = document.getElementById('chatUserStatusBar');
+    const messageInput = document.getElementById('chatMessageInput');
+    const sendButton = document.getElementById('chatSendButton');
+    const chatStatus = document.getElementById('chatStatus');
+    
+    if (chatCurrentUser) {
+        // Авторизованный пользователь
+        userProfile.innerHTML = `
+            <div class="chat-user-avatar">
+                <span>${chatCurrentUser.name.charAt(0).toUpperCase()}</span>
+            </div>
+            <div class="chat-user-info">
+                <div class="chat-user-name">${chatCurrentUser.name}</div>
+                <div class="chat-user-status">В сети</div>
+            </div>
+            <button class="chat-auth-btn" onclick="handleChatLogout()">Выйти</button>
+        `;
+        
+        userStatusBar.innerHTML = `
+            <span class="chat-status-indicator online"></span>
+            <span class="chat-status-text">${chatCurrentUser.name}</span>
+        `;
+        
+        messageInput.disabled = false;
+        sendButton.disabled = false;
+        chatStatus.textContent = 'Подключено к чату';
+    } else {
+        // Гость
+        userProfile.innerHTML = `
+            <div class="chat-user-avatar">
+                <span class="avatar-placeholder">?</span>
+            </div>
+            <div class="chat-user-info">
+                <div class="chat-user-name">Гость</div>
+                <div class="chat-user-status">Не в сети</div>
+            </div>
+            <button class="chat-auth-btn" onclick="showChatAuthModal()">Войти</button>
+        `;
+        
+        userStatusBar.innerHTML = `
+            <span class="chat-status-indicator offline"></span>
+            <span class="chat-status-text">Гость</span>
+            <button class="chat-login-btn" onclick="showChatAuthModal()">Войти для общения</button>
+        `;
+        
+        messageInput.disabled = true;
+        sendButton.disabled = true;
+        chatStatus.textContent = 'Требуется вход для отправки сообщений';
+    }
+}
+
+// Настройка обработчиков событий чата
+function setupChatEventListeners() {
+    // Обработчики форм авторизации
+    const loginForm = document.getElementById('chatLoginForm');
+    const registerForm = document.getElementById('chatRegisterForm');
+    
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('chatLoginEmail').value;
+            const password = document.getElementById('chatLoginPassword').value;
+            
+            try {
+                const { data, error } = await chatSupabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) throw error;
+                
+                closeChatAuthModal();
+                await checkChatAuthStatus();
+                
+                // Обновляем онлайн статус
+                if (chatCurrentUser) {
+                    await updateChatOnlineStatus(true);
+                }
+                
+            } catch (error) {
+                console.error('Ошибка входа в чат:', error);
+                alert('Ошибка входа: ' + error.message);
+            }
+        });
+    }
+    
+    if (registerForm) {
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('chatRegisterName').value;
+            const email = document.getElementById('chatRegisterEmail').value;
+            const password = document.getElementById('chatRegisterPassword').value;
+            
+            try {
+                const { data, error } = await chatSupabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            name: name
+                        }
+                    }
+                });
+                
+                if (error) throw error;
+                
+                alert('Регистрация успешна! Проверьте email для подтверждения.');
+                closeChatAuthModal();
+                
+            } catch (error) {
+                console.error('Ошибка регистрации в чате:', error);
+                alert('Ошибка регистрации: ' + error.message);
+            }
+        });
+    }
+    
+    // Обработчики чатов
+    document.querySelectorAll('.chat-chat-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const chat = this.dataset.chat;
+            switchChat(chat);
+        });
+    });
+    
+    // Обработчик ввода сообщения
+    const messageInput = document.getElementById('chatMessageInput');
+    messageInput.addEventListener('input', autoResizeChatTextarea);
+    
+    messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey && !messageInput.disabled) {
+            e.preventDefault();
+            sendChatMessage();
+        }
+    });
+}
+
+// Переключение чата
+function switchChat(chatId) {
+    chatCurrentChat = chatId;
+    
+    // Обновляем активный чат
+    document.querySelectorAll('.chat-chat-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    document.querySelector(`[data-chat="${chatId}"]`).classList.add('active');
+    
+    // Обновляем заголовок чата
+    updateChatHeader(chatId);
+    
+    // Загружаем сообщения для этого чата
+    loadChatMessages(chatId);
+}
+
+// Обновление заголовка чата
+function updateChatHeader(chatId) {
+    const chatNames = {
+        'general': { title: 'Общий чат', subtitle: '12 участников • 5 в сети', avatar: '💬' },
+        'japan': { title: 'Япония', subtitle: '8 участников • 3 в сети', avatar: '🗼️' },
+        'france': { title: 'Франция', subtitle: '6 участников • 2 в сети', avatar: '🗽' },
+        'italy': { title: 'Италия', subtitle: '7 участников • 4 в сети', avatar: '🏛️' },
+        'uk': { title: 'Великобритания', subtitle: '5 участников • 2 в сети', avatar: '🏰' }
+    };
+    
+    const chat = chatNames[chatId];
+    if (chat) {
+        document.querySelector('.chat-title').textContent = chat.title;
+        document.querySelector('.chat-subtitle').textContent = chat.subtitle;
+        document.querySelector('.chat-avatar-large').textContent = chat.avatar;
+    }
+}
+
+// Загрузка сообщений чата
+async function loadChatMessages(chatId = 'general') {
+    try {
+        const { data, error } = await chatSupabase
+            .from('messages')
+            .select('*')
+            .eq('chat_id', chatId)
+            .order('created_at', { ascending: true })
+            .limit(50);
+            
+        if (error) throw error;
+        
+        displayChatMessages(data || []);
+    } catch (error) {
+        console.error('Ошибка загрузки сообщений чата:', error);
+    }
+}
+
+// Отображение сообщений чата
+function displayChatMessages(messages) {
+    const messagesArea = document.getElementById('chatMessages');
+    
+    // Очищаем старые сообщения
+    messagesArea.innerHTML = '';
+    
+    if (messages.length === 0) {
+        messagesArea.innerHTML = `
+            <div class="chat-welcome-message">
+                <div class="chat-welcome-icon">🌍</div>
+                <h3>Добро пожаловать в чат AliveAgain!</h3>
+                <p>Присоединяйтесь к общению с путешественниками со всего мира</p>
+                <div class="chat-welcome-tips">
+                    <p>💡 <strong>Советы:</strong></p>
+                    <ul>
+                        <li>Представьтесь, когда впервые заходите в чат</li>
+                        <li>Расскажите о своих путешествиях</li>
+                        <li>Задавайте вопросы о странах, которые интересуют</li>
+                        <li>Будьте дружелюбны и открыты к общению</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    // Группируем сообщения по дате
+    let lastDate = null;
+    messages.forEach(message => {
+        const messageDate = new Date(message.created_at).toDateString();
+        
+        if (messageDate !== lastDate) {
+            const dateDivider = document.createElement('div');
+            dateDivider.className = 'date-divider';
+            dateDivider.innerHTML = `<span class="date-text">${formatChatDate(message.created_at)}</span>`;
+            messagesArea.appendChild(dateDivider);
+            lastDate = messageDate;
+        }
+        
+        const messageElement = createChatMessageElement(message);
+        messagesArea.appendChild(messageElement);
+    });
+    
+    scrollToChatBottom();
+}
+
+// Создание элемента сообщения чата
+function createChatMessageElement(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-message ${message.user_id === chatCurrentUser?.id ? 'own-message' : 'other-message'}`;
+    
+    const time = new Date(message.created_at).toLocaleTimeString('ru-RU', {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    messageDiv.innerHTML = `
+        <div class="message-avatar">${message.user_name.charAt(0).toUpperCase()}</div>
+        <div class="message-content">
+            <div class="message-header">
+                <span class="message-author">${message.user_name}</span>
+                <span class="message-time">${time}</span>
+            </div>
+            <div class="message-text">${escapeChatHtml(message.text)}</div>
+        </div>
+    `;
+    
+    return messageDiv;
+}
+
+// Отправка сообщения чата
+async function sendChatMessage() {
+    if (!chatCurrentUser) {
+        showChatAuthModal();
+        return;
+    }
+    
+    const input = document.getElementById('chatMessageInput');
+    const text = input.value.trim();
+    
+    if (!text) return;
+    
+    try {
+        const { data, error } = await chatSupabase
+            .from('messages')
+            .insert({
+                user_id: chatCurrentUser.id,
+                user_name: chatCurrentUser.name,
+                text: text,
+                chat_id: chatCurrentChat,
+                created_at: new Date().toISOString()
+            })
+            .select();
+            
+        if (error) throw error;
+        
+        input.value = '';
+        autoResizeChatTextarea();
+        
+        // Воспроизводим звук
+        if (chatSoundEnabled) {
+            playChatNotificationSound();
+        }
+        
+        console.log('Сообщение чата отправлено:', data);
+    } catch (error) {
+        console.error('Ошибка отправки сообщения чата:', error);
+    }
+}
+
+// Подписка на обновления чата
+function subscribeToChatUpdates() {
+    // Подписка на сообщения
+    chatMessagesSubscription = chatSupabase
+        .channel('integrated_chat_messages')
+        .on('postgres_changes', 
+            { 
+                event: 'INSERT', 
+                schema: 'public', 
+                table: 'messages' 
+            },
+            (payload) => {
+                if (payload.new.chat_id === chatCurrentChat) {
+                    addNewChatMessage(payload.new);
+                    
+                    // Воспроизводим звук для новых сообщений других пользователей
+                    if (chatSoundEnabled && payload.new.user_id !== chatCurrentUser?.id) {
+                        playChatNotificationSound();
+                    }
+                }
+            }
+        )
+        .subscribe();
+    
+    // Подписка на онлайн пользователей
+    chatOnlineUsersSubscription = chatSupabase
+        .channel('integrated_online_users')
+        .on('postgres_changes',
+            {
+                event: '*',
+                schema: 'public',
+                table: 'online_users'
+            },
+            () => {
+                loadChatOnlineUsers();
+            }
+        )
+        .subscribe();
+}
+
+// Добавление нового сообщения чата
+function addNewChatMessage(message) {
+    const messagesArea = document.getElementById('chatMessages');
+    
+    // Удаляем приветственное сообщение
+    const welcomeMsg = messagesArea.querySelector('.chat-welcome-message');
+    if (welcomeMsg) {
+        welcomeMsg.remove();
+    }
+    
+    const messageElement = createChatMessageElement(message);
+    messagesArea.appendChild(messageElement);
+    
+    scrollToChatBottom();
+    chatMessageCount++;
+    updateChatMessageCount();
+}
+
+// Загрузка онлайн пользователей чата
+async function loadChatOnlineUsers() {
+    try {
+        const { data, error } = await chatSupabase
+            .from('online_users')
+            .select('*')
+            .gte('last_seen', new Date(Date.now() - 5 * 60 * 1000).toISOString());
+            
+        if (error) throw error;
+        
+        displayChatOnlineUsers(data || []);
+        updateChatOnlineCount(data?.length || 0);
+    } catch (error) {
+        console.error('Ошибка загрузки онлайн пользователей чата:', error);
+    }
+}
+
+// Отображение онлайн пользователей чата
+function displayChatOnlineUsers(users) {
+    const onlineUsersDiv = document.getElementById('chatOnlineUsers');
+    onlineUsersDiv.innerHTML = '';
+    
+    users.forEach(user => {
+        const userDiv = document.createElement('div');
+        userDiv.className = 'chat-online-user';
+        userDiv.innerHTML = `
+            <div class="online-avatar">${user.user_name.charAt(0).toUpperCase()}</div>
+            <div class="online-name">${user.user_name}</div>
+            <div class="online-status online"></div>
+        `;
+        onlineUsersDiv.appendChild(userDiv);
+    });
+    
+    if (users.length === 0) {
+        onlineUsersDiv.innerHTML = '<div class="loading-users">Никто онлайн</div>';
+    }
+}
+
+// Модальные окна чата
+function showChatAuthModal() {
+    document.getElementById('chatAuthModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeChatAuthModal() {
+    document.getElementById('chatAuthModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function switchChatAuthTab(tab) {
+    const loginForm = document.getElementById('chatLoginForm');
+    const registerForm = document.getElementById('chatRegisterForm');
+    const tabBtns = document.querySelectorAll('.chat-tab-btn');
+    
+    tabBtns.forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`[onclick="switchChatAuthTab('${tab}')"]`).classList.add('active');
+    
+    if (tab === 'login') {
+        loginForm.style.display = 'flex';
+        registerForm.style.display = 'none';
+    } else {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'flex';
+    }
+}
+
+// Дополнительные функции чата
+function toggleChatSearch() {
+    alert('Поиск по сообщениям будет доступен в следующем обновлении');
+}
+
+function toggleChatTheme() {
+    chatDarkTheme = !chatDarkTheme;
+    document.body.classList.toggle('dark-theme', chatDarkTheme);
+    
+    const themeIcon = document.getElementById('chatThemeIcon');
+    themeIcon.textContent = chatDarkTheme ? '☀️' : '🌙';
+}
+
+function toggleChatSound() {
+    chatSoundEnabled = !chatSoundEnabled;
+    
+    const soundIcon = document.getElementById('chatSoundIcon');
+    soundIcon.textContent = chatSoundEnabled ? '🔊' : '🔇';
+}
+
+function attachChatFile() {
+    alert('Прикрепление файлов будет доступно в следующем обновлении');
+}
+
+function toggleChatEmojiPanel() {
+    const emojiPanel = document.getElementById('chatEmojiPanel');
+    emojiPanel.style.display = emojiPanel.style.display === 'none' ? 'block' : 'none';
+}
+
+function insertChatEmoji(emoji) {
+    const input = document.getElementById('chatMessageInput');
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+    
+    input.value = input.value.substring(0, start) + emoji + input.value.substring(end);
+    input.selectionStart = input.selectionEnd = start + emoji.length;
+    
+    toggleChatEmojiPanel();
+    input.focus();
+}
+
+// Выход из чата
+async function handleChatLogout() {
+    try {
+        await updateChatOnlineStatus(false);
+        
+        const { error } = await chatSupabase.auth.signOut();
+        if (error) throw error;
+        
+        chatCurrentUser = null;
+        updateChatUserInterface();
+        
+        alert('Вы вышли из аккаунта');
+    } catch (error) {
+        console.error('Ошибка выхода из чата:', error);
+        alert('Ошибка выхода: ' + error.message);
+    }
+}
+
+// Обновление онлайн статуса чата
+async function updateChatOnlineStatus(isOnline) {
+    if (!chatCurrentUser) return;
+    
+    try {
+        if (isOnline) {
+            await chatSupabase
+                .from('online_users')
+                .upsert({
+                    user_id: chatCurrentUser.id,
+                    user_name: chatCurrentUser.name,
+                    last_seen: new Date().toISOString()
+                });
+        } else {
+            await chatSupabase
+                .from('online_users')
+                .delete()
+                .eq('user_id', chatCurrentUser.id);
+        }
+    } catch (error) {
+        console.error('Ошибка обновления онлайн статуса чата:', error);
+    }
+}
+
+// Вспомогательные функции чата
+function scrollToChatBottom() {
+    const messagesContainer = document.getElementById('chatMessages');
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+function autoResizeChatTextarea() {
+    const textarea = document.getElementById('chatMessageInput');
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 100) + 'px';
+}
+
+function formatChatDate(dateString) {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    if (date.toDateString() === today.toDateString()) {
+        return 'Сегодня';
+    } else if (date.toDateString() === yesterday.toDateString()) {
+        return 'Вчера';
+    } else {
+        return date.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long'
+        });
+    }
+}
+
+function escapeChatHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function playChatNotificationSound() {
+    // Создаем простой звук уведомления
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.1);
+}
+
+function updateChatMessageCount() {
+    const countElement = document.getElementById('chatMessageCount');
+    if (countElement) {
+        countElement.textContent = chatMessageCount;
+    }
+}
+
+function updateChatOnlineCount(count) {
+    const countElement = document.getElementById('chatOnlineCount');
+    if (countElement) {
+        countElement.textContent = count;
+    }
+}
+
+// Закрытие модальных окон по клику вне их
+window.addEventListener('click', function(e) {
+    if (e.target.classList.contains('chat-modal-overlay')) {
+        e.target.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+});
+
+// Закрытие по ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modals = document.querySelectorAll('.chat-modal-overlay');
+        modals.forEach(modal => {
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Закрыть панель эмодзи
+        const emojiPanel = document.getElementById('chatEmojiPanel');
+        if (emojiPanel.style.display === 'block') {
+            emojiPanel.style.display = 'none';
+        }
+    }
+});
+
+// Закрытие emoji панели по клику вне
+document.addEventListener('click', function(e) {
+    const emojiPanel = document.getElementById('chatEmojiPanel');
+    if (!emojiPanel.contains(e.target) && !e.target.classList.contains('chat-emoji-btn')) {
+        emojiPanel.style.display = 'none';
+    }
+});
+
+// Очистка при выходе
+window.addEventListener('beforeunload', async function() {
+    if (chatCurrentUser) {
+        await updateChatOnlineStatus(false);
+    }
+    
+    if (chatMessagesSubscription) {
+        chatSupabase.removeChannel(chatMessagesSubscription);
+    }
+    
+    if (chatOnlineUsersSubscription) {
+        chatSupabase.removeChannel(chatOnlineUsersSubscription);
+    }
+});
+
+// Периодическое обновление онлайн статуса
+setInterval(async function() {
+    if (chatCurrentUser) {
+        await updateChatOnlineStatus(true);
+    }
+}, 60000); // Каждую минуту
+
 // Функция прокрутки к странам
 window.scrollToCountries = function() {
     console.log('Прокрутка к странам');
