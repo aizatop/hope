@@ -1,4 +1,4 @@
-// Инициализация Supabase
+// JavaScript для улучшенного чата
 const supabaseUrl = 'https://eybvtbskxktwurotecjl.supabase.co';
 const supabaseKey = 'sb_publishable_2fVufYc7abrhKrlZhy2ZJQ_nQqDR7f1';
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
@@ -7,110 +7,159 @@ const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 let currentUser = null;
 let messagesSubscription = null;
 let onlineUsersSubscription = null;
+let messageCount = 0;
+let soundEnabled = true;
+let darkTheme = false;
+let currentChat = 'general';
 
-// Инициализация чата
+// Инициализация
 document.addEventListener('DOMContentLoaded', async function() {
-    console.log('Чат загружается...');
+    console.log('Загрузка улучшенного чата...');
     
     // Проверяем авторизацию
-    const session = await checkSession();
-    if (!session) {
-        alert('Для доступа к чату необходимо войти в систему');
-        window.location.href = 'index.html';
-        return;
-    }
+    await checkAuthStatus();
     
-    currentUser = {
-        id: session.user.id,
-        name: session.user.user_metadata?.name || session.user.email.split('@')[0],
-        email: session.user.email
-    };
+    // Инициализируем интерфейс
+    initializeInterface();
     
-    console.log('Текущий пользователь:', currentUser);
+    // Настраиваем обработчики
+    setupEventListeners();
     
-    // Инициализация чата
-    await initializeChat();
+    // Загружаем сообщения
+    await loadMessages();
+    
+    // Подписываемся на обновления
+    subscribeToUpdates();
+    
+    console.log('Улучшенный чат загружен');
 });
 
-// Проверка сессии
-async function checkSession() {
+// Проверка статуса авторизации
+async function checkAuthStatus() {
     try {
         const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
-        return session;
+        
+        if (error) {
+            console.error('Ошибка проверки сессии:', error);
+            currentUser = null;
+        } else if (session && session.user) {
+            currentUser = {
+                id: session.user.id,
+                name: session.user.user_metadata?.name || session.user.email.split('@')[0],
+                email: session.user.email
+            };
+            console.log('Пользователь авторизован:', currentUser);
+        } else {
+            currentUser = null;
+            console.log('Пользователь не авторизован');
+        }
+        
+        updateUserInterface();
     } catch (error) {
-        console.error('Ошибка проверки сессии:', error);
-        return null;
+        console.error('Ошибка при проверке авторизации:', error);
+        currentUser = null;
+        updateUserInterface();
     }
 }
 
-// Инициализация чата
-async function initializeChat() {
-    try {
-        // Создаем таблицы если их нет
-        await createTables();
+// Обновление интерфейса пользователя
+function updateUserInterface() {
+    const userProfile = document.getElementById('userProfile');
+    
+    if (currentUser) {
+        // Авторизованный пользователь
+        userProfile.innerHTML = `
+            <div class="user-avatar">
+                <span>${currentUser.name.charAt(0).toUpperCase()}</span>
+            </div>
+            <div class="user-info">
+                <div class="user-name">${currentUser.name}</div>
+                <div class="user-status">В сети</div>
+            </div>
+            <button class="auth-btn" onclick="handleLogout()">Выйти</button>
+        `;
         
-        // Загружаем сообщения
-        await loadMessages();
+        // Разблокируем ввод
+        document.getElementById('messageInput').disabled = false;
+        document.getElementById('sendButton').disabled = false;
+    } else {
+        // Гость
+        userProfile.innerHTML = `
+            <div class="user-avatar">
+                <span class="avatar-placeholder">?</span>
+            </div>
+            <div class="user-info">
+                <div class="user-name">Гость</div>
+                <div class="user-status">Не в сети</div>
+            </div>
+            <button class="auth-btn" onclick="showAuthModal()">Войти</button>
+        `;
         
-        // Подписываемся на обновления
-        subscribeToMessages();
-        subscribeToOnlineUsers();
-        
-        // Обновляем онлайн статус
-        await updateOnlineStatus(true);
-        
-        // Обработчик отправки сообщений
-        document.getElementById('messageInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
+        // Блокируем ввод
+        document.getElementById('messageInput').disabled = true;
+        document.getElementById('sendButton').disabled = true;
+    }
+}
+
+// Инициализация интерфейса
+function initializeInterface() {
+    // Настраиваем чаты
+    document.querySelectorAll('.chat-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const chat = this.dataset.chat;
+            switchChat(chat);
         });
-        
-        console.log('Чат инициализирован');
-    } catch (error) {
-        console.error('Ошибка инициализации чата:', error);
-    }
+    });
+    
+    // Обновляем онлайн пользователей
+    loadOnlineUsers();
 }
 
-// Создание таблиц в Supabase
-async function createTables() {
-    try {
-        // Таблица сообщений
-        const { error: messagesError } = await supabase.rpc('create_messages_table');
-        if (messagesError && !messagesError.message.includes('already exists')) {
-            console.error('Ошибка создания таблицы сообщений:', messagesError);
-        }
-        
-        // Таблица онлайн пользователей
-        const { error: onlineError } = await supabase.rpc('create_online_users_table');
-        if (onlineError && !onlineError.message.includes('already exists')) {
-            console.error('Ошибка создания таблицы онлайн пользователей:', onlineError);
-        }
-        
-        console.log('Таблицы проверены');
-    } catch (error) {
-        console.error('Ошибка при создании таблиц:', error);
+// Переключение чата
+function switchChat(chatId) {
+    currentChat = chatId;
+    
+    // Обновляем активный чат
+    document.querySelectorAll('.chat-item').forEach(item => {
+        item.classList.remove('active');
+    });
+    document.querySelector(`[data-chat="${chatId}"]`).classList.add('active');
+    
+    // Обновляем заголовок чата
+    updateChatHeader(chatId);
+    
+    // Загружаем сообщения для этого чата
+    loadMessages(chatId);
+}
+
+// Обновление заголовка чата
+function updateChatHeader(chatId) {
+    const chatNames = {
+        'general': { title: 'Общий чат', subtitle: '12 участников • 5 в сети', avatar: '💬' },
+        'travel': { title: 'Путешествия', subtitle: '8 участников • 3 в сети', avatar: '✈️' }
+    };
+    
+    const chat = chatNames[chatId];
+    if (chat) {
+        document.querySelector('.chat-title').textContent = chat.title;
+        document.querySelector('.chat-subtitle').textContent = chat.subtitle;
+        document.querySelector('.chat-avatar-large').textContent = chat.avatar;
     }
 }
 
 // Загрузка сообщений
-async function loadMessages() {
+async function loadMessages(chatId = 'general') {
     try {
         const { data, error } = await supabase
             .from('messages')
             .select('*')
+            .eq('chat_id', chatId)
             .order('created_at', { ascending: true })
             .limit(50);
             
         if (error) throw error;
         
         displayMessages(data || []);
-        updateMessageCount(data?.length || 0);
-        
-        // Прокручиваем к последнему сообщению
-        scrollToBottom();
     } catch (error) {
         console.error('Ошибка загрузки сообщений:', error);
     }
@@ -118,19 +167,55 @@ async function loadMessages() {
 
 // Отображение сообщений
 function displayMessages(messages) {
-    const messagesContainer = document.getElementById('chatMessages');
-    messagesContainer.innerHTML = '';
+    const messagesArea = document.getElementById('chatMessages');
     
+    // Очищаем старые сообщения
+    messagesArea.innerHTML = '';
+    
+    if (messages.length === 0) {
+        messagesArea.innerHTML = `
+            <div class="welcome-message">
+                <div class="welcome-icon">🌍</div>
+                <h3>Добро пожаловать в чат!</h3>
+                <p>Присоединяйтесь к общению с другими путешественниками</p>
+                <div class="welcome-tips">
+                    <p>💡 <strong>Советы:</strong></p>
+                    <ul>
+                        <li>Представьтесь, когда впервые заходите в чат</li>
+                        <li>Расскажите о своих путешествиях</li>
+                        <li>Задавайте вопросы о странах, которые интересуют</li>
+                        <li>Будьте дружелюбны и открыты к общению</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+        return;
+    }
+    
+    // Группируем сообщения по дате
+    let lastDate = null;
     messages.forEach(message => {
+        const messageDate = new Date(message.created_at).toDateString();
+        
+        if (messageDate !== lastDate) {
+            const dateDivider = document.createElement('div');
+            dateDivider.className = 'date-divider';
+            dateDivider.innerHTML = `<span class="date-text">${formatDate(message.created_at)}</span>`;
+            messagesArea.appendChild(dateDivider);
+            lastDate = messageDate;
+        }
+        
         const messageElement = createMessageElement(message);
-        messagesContainer.appendChild(messageElement);
+        messagesArea.appendChild(messageElement);
     });
+    
+    scrollToBottom();
 }
 
 // Создание элемента сообщения
 function createMessageElement(message) {
     const messageDiv = document.createElement('div');
-    messageDiv.className = `chat-message ${message.user_id === currentUser.id ? 'own-message' : 'other-message'}`;
+    messageDiv.className = `chat-message ${message.user_id === currentUser?.id ? 'own-message' : 'other-message'}`;
     
     const time = new Date(message.created_at).toLocaleTimeString('ru-RU', {
         hour: '2-digit',
@@ -138,11 +223,14 @@ function createMessageElement(message) {
     });
     
     messageDiv.innerHTML = `
-        <div class="message-header">
-            <span class="message-author">${message.user_name}</span>
-            <span class="message-time">${time}</span>
+        <div class="message-avatar">${message.user_name.charAt(0).toUpperCase()}</div>
+        <div class="message-content">
+            <div class="message-header">
+                <span class="message-author">${message.user_name}</span>
+                <span class="message-time">${time}</span>
+            </div>
+            <div class="message-text">${escapeHtml(message.text)}</div>
         </div>
-        <div class="message-text">${escapeHtml(message.text)}</div>
     `;
     
     return messageDiv;
@@ -150,6 +238,11 @@ function createMessageElement(message) {
 
 // Отправка сообщения
 async function sendMessage() {
+    if (!currentUser) {
+        showAuthModal();
+        return;
+    }
+    
     const input = document.getElementById('messageInput');
     const text = input.value.trim();
     
@@ -162,6 +255,7 @@ async function sendMessage() {
                 user_id: currentUser.id,
                 user_name: currentUser.name,
                 text: text,
+                chat_id: currentChat,
                 created_at: new Date().toISOString()
             })
             .select();
@@ -169,18 +263,24 @@ async function sendMessage() {
         if (error) throw error;
         
         input.value = '';
-        console.log('Сообщение отправлено:', data);
+        autoResizeTextarea();
         
+        // Воспроизводим звук
+        if (soundEnabled) {
+            playNotificationSound();
+        }
+        
+        console.log('Сообщение отправлено:', data);
     } catch (error) {
         console.error('Ошибка отправки сообщения:', error);
-        alert('Не удалось отправить сообщение');
     }
 }
 
-// Подписка на сообщения
-function subscribeToMessages() {
+// Подписка на обновления
+function subscribeToUpdates() {
+    // Подписка на сообщения
     messagesSubscription = supabase
-        .channel('messages')
+        .channel('enhanced_chat_messages')
         .on('postgres_changes', 
             { 
                 event: 'INSERT', 
@@ -188,17 +288,21 @@ function subscribeToMessages() {
                 table: 'messages' 
             },
             (payload) => {
-                console.log('Новое сообщение:', payload.new);
-                addNewMessage(payload.new);
+                if (payload.new.chat_id === currentChat) {
+                    addNewMessage(payload.new);
+                    
+                    // Воспроизводим звук для новых сообщений других пользователей
+                    if (soundEnabled && payload.new.user_id !== currentUser?.id) {
+                        playNotificationSound();
+                    }
+                }
             }
         )
         .subscribe();
-}
-
-// Подписка на онлайн пользователей
-function subscribeToOnlineUsers() {
+    
+    // Подписка на онлайн пользователей
     onlineUsersSubscription = supabase
-        .channel('online_users')
+        .channel('enhanced_online_users')
         .on('postgres_changes',
             {
                 event: '*',
@@ -214,12 +318,20 @@ function subscribeToOnlineUsers() {
 
 // Добавление нового сообщения
 function addNewMessage(message) {
-    const messagesContainer = document.getElementById('chatMessages');
+    const messagesArea = document.getElementById('chatMessages');
+    
+    // Удаляем приветственное сообщение
+    const welcomeMsg = messagesArea.querySelector('.welcome-message');
+    if (welcomeMsg) {
+        welcomeMsg.remove();
+    }
+    
     const messageElement = createMessageElement(message);
-    messagesContainer.appendChild(messageElement);
+    messagesArea.appendChild(messageElement);
     
     scrollToBottom();
-    updateMessageCount(messagesContainer.children.length);
+    messageCount++;
+    updateMessageCount();
 }
 
 // Загрузка онлайн пользователей
@@ -228,11 +340,12 @@ async function loadOnlineUsers() {
         const { data, error } = await supabase
             .from('online_users')
             .select('*')
-            .gte('last_seen', new Date(Date.now() - 5 * 60 * 1000).toISOString()); // 5 минут
+            .gte('last_seen', new Date(Date.now() - 5 * 60 * 1000).toISOString());
             
         if (error) throw error;
         
         displayOnlineUsers(data || []);
+        updateOnlineCount(data?.length || 0);
     } catch (error) {
         console.error('Ошибка загрузки онлайн пользователей:', error);
     }
@@ -240,26 +353,211 @@ async function loadOnlineUsers() {
 
 // Отображение онлайн пользователей
 function displayOnlineUsers(users) {
-    const usersList = document.getElementById('onlineUsersList');
-    usersList.innerHTML = '';
+    const onlineUsersDiv = document.getElementById('onlineUsers');
+    onlineUsersDiv.innerHTML = '';
     
     users.forEach(user => {
         const userDiv = document.createElement('div');
         userDiv.className = 'online-user';
         userDiv.innerHTML = `
             <div class="online-avatar">${user.user_name.charAt(0).toUpperCase()}</div>
-            <span>${user.user_name}</span>
+            <div class="online-name">${user.user_name}</div>
+            <div class="online-status online"></div>
         `;
-        usersList.appendChild(userDiv);
+        onlineUsersDiv.appendChild(userDiv);
     });
     
     if (users.length === 0) {
-        usersList.innerHTML = '<div class="no-users">Никто онлайн</div>';
+        onlineUsersDiv.innerHTML = '<div class="loading-users">Никто онлайн</div>';
+    }
+}
+
+// Настройка обработчиков событий
+function setupEventListeners() {
+    // Обработчики форм авторизации
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) throw error;
+                
+                closeAuthModal();
+                await checkAuthStatus();
+                
+                // Обновляем онлайн статус
+                if (currentUser) {
+                    await updateOnlineStatus(true);
+                }
+                
+            } catch (error) {
+                console.error('Ошибка входа:', error);
+                alert('Ошибка входа: ' + error.message);
+            }
+        });
+    }
+    
+    if (registerForm) {
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            
+            try {
+                const { data, error } = await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            name: name
+                        }
+                    }
+                });
+                
+                if (error) throw error;
+                
+                alert('Регистрация успешна! Проверьте email для подтверждения.');
+                closeAuthModal();
+                
+            } catch (error) {
+                console.error('Ошибка регистрации:', error);
+                alert('Ошибка регистрации: ' + error.message);
+            }
+        });
+    }
+    
+    // Обработчик ввода сообщения
+    const messageInput = document.getElementById('messageInput');
+    messageInput.addEventListener('input', autoResizeTextarea);
+    
+    messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey && !messageInput.disabled) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+}
+
+// Модальные окна
+function showAuthModal() {
+    document.getElementById('authModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeAuthModal() {
+    document.getElementById('authModal').style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+function switchAuthTab(tab) {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    
+    tabBtns.forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`[onclick="switchAuthTab('${tab}')"]`).classList.add('active');
+    
+    if (tab === 'login') {
+        loginForm.style.display = 'flex';
+        registerForm.style.display = 'none';
+    } else {
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'flex';
+    }
+}
+
+// Дополнительные функции
+function toggleSearch() {
+    const searchBar = document.getElementById('searchBar');
+    searchBar.style.display = searchBar.style.display === 'none' ? 'flex' : 'none';
+}
+
+function toggleTheme() {
+    darkTheme = !darkTheme;
+    document.body.classList.toggle('dark-theme', darkTheme);
+    
+    const themeIcon = document.getElementById('themeIcon');
+    themeIcon.textContent = darkTheme ? '☀️' : '🌙';
+}
+
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+    
+    const soundIcon = document.getElementById('soundIcon');
+    soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+}
+
+function clearMessages() {
+    if (confirm('Вы уверены, что хотите очистить историю сообщений?')) {
+        const messagesArea = document.getElementById('chatMessages');
+        messagesArea.innerHTML = `
+            <div class="welcome-message">
+                <div class="welcome-icon">🌍</div>
+                <h3>Чат очищен</h3>
+                <p>История сообщений была удалена</p>
+            </div>
+        `;
+        messageCount = 0;
+        updateMessageCount();
+    }
+}
+
+function attachFile() {
+    alert('Прикрепление файлов будет доступно в следующем обновлении');
+}
+
+function toggleEmojiPanel() {
+    const emojiPanel = document.getElementById('emojiPanel');
+    emojiPanel.style.display = emojiPanel.style.display === 'none' ? 'block' : 'none';
+}
+
+function insertEmoji(emoji) {
+    const input = document.getElementById('messageInput');
+    const start = input.selectionStart;
+    const end = input.selectionEnd;
+    
+    input.value = input.value.substring(0, start) + emoji + input.value.substring(end);
+    input.selectionStart = input.selectionEnd = start + emoji.length;
+    
+    toggleEmojiPanel();
+    input.focus();
+}
+
+// Выход
+async function handleLogout() {
+    try {
+        await updateOnlineStatus(false);
+        
+        const { error } = await supabase.auth.signOut();
+        if (error) throw error;
+        
+        currentUser = null;
+        updateUserInterface();
+        
+        alert('Вы вышли из аккаунта');
+    } catch (error) {
+        console.error('Ошибка выхода:', error);
+        alert('Ошибка выхода: ' + error.message);
     }
 }
 
 // Обновление онлайн статуса
 async function updateOnlineStatus(isOnline) {
+    if (!currentUser) return;
+    
     try {
         if (isOnline) {
             await supabase
@@ -280,14 +578,33 @@ async function updateOnlineStatus(isOnline) {
     }
 }
 
-// Вспомогательные функции
 function scrollToBottom() {
     const messagesContainer = document.getElementById('chatMessages');
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
 }
 
-function updateMessageCount(count) {
-    document.getElementById('messageCount').textContent = `${count} сообщений`;
+function autoResizeTextarea() {
+    const textarea = document.getElementById('messageInput');
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 100) + 'px';
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    if (date.toDateString() === today.toDateString()) {
+        return 'Сегодня';
+    } else if (date.toDateString() === yesterday.toDateString()) {
+        return 'Вчера';
+    } else {
+        return date.toLocaleDateString('ru-RU', {
+            day: 'numeric',
+            month: 'long'
+        });
+    }
 }
 
 function escapeHtml(text) {
@@ -296,9 +613,79 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
+function playNotificationSound() {
+    // Создаем простой звук уведомления
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.1);
+}
+
+function updateMessageCount() {
+    const countElement = document.getElementById('messageCount');
+    if (countElement) {
+        countElement.textContent = messageCount;
+    }
+}
+
+function updateOnlineCount(count) {
+    const countElement = document.getElementById('onlineCount');
+    if (countElement) {
+        countElement.textContent = count;
+    }
+}
+
+// Закрытие модальных окон по клику вне их
+window.addEventListener('click', function(e) {
+    if (e.target.classList.contains('modal-overlay')) {
+        e.target.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+});
+
+// Закрытие по ESC
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const modals = document.querySelectorAll('.modal-overlay');
+        modals.forEach(modal => {
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // Закрыть панель эмодзи
+        const emojiPanel = document.getElementById('emojiPanel');
+        if (emojiPanel.style.display === 'block') {
+            emojiPanel.style.display = 'none';
+        }
+    }
+});
+
+// Закрытие emoji панели по клику вне
+document.addEventListener('click', function(e) {
+    const emojiPanel = document.getElementById('emojiPanel');
+    if (!emojiPanel.contains(e.target) && !e.target.classList.contains('emoji-btn')) {
+        emojiPanel.style.display = 'none';
+    }
+});
+
 // Очистка при выходе
 window.addEventListener('beforeunload', async function() {
-    await updateOnlineStatus(false);
+    if (currentUser) {
+        await updateOnlineStatus(false);
+    }
     
     if (messagesSubscription) {
         supabase.removeChannel(messagesSubscription);
