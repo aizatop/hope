@@ -302,6 +302,331 @@
                     </div>
                 </div>
             </section>
+
+            <!-- Чат Section -->
+    <section class="chat-section">
+        <div class="chat-container">
+            <aside class="chat-sidebar">
+                <!-- Логотип и навигация -->
+                <div class="chat-sidebar-header">
+                    <div class="chat-logo">
+                        <span class="chat-logo-icon">🌍</span>
+                        <span class="chat-logo-text">AliveAgain</span>
+                        <a href="#countries" class="back-to-countries">← К странам</a>
+                    </div>
+                </div>
+
+                <!-- Пользователь и чаты -->
+                <div class="chat-sidebar-content">
+                    <!-- Профиль пользователя -->
+                    <div class="chat-user-profile" id="chatUserProfile">
+                        <div class="chat-user-avatar">
+                            <span class="avatar-placeholder">?</span>
+                        </div>
+                        <div class="chat-user-info">
+                            <div class="chat-user-name">Гость</div>
+                            <div class="chat-user-status">Не в сети</div>
+                        </div>
+                        <button class="chat-auth-btn" onclick="showChatAuthModal()">Войти</button>
+                    </div>
+
+                    <!-- Список чатов -->
+                    <div class="chat-chats-section">
+                        <h3 class="chat-section-title">Чаты</h3>
+                        <div class="chat-chats-list">
+                            <div class="chat-chat-item active" data-chat="general">
+                                <div class="chat-chat-avatar">💬</div>
+                                <div class="chat-chat-info">
+                                    <div class="chat-chat-name">Общий чат</div>
+                                    <div class="chat-chat-preview">Добро пожаловать...</div>
+                                </div>
+                                <div class="chat-chat-meta">
+                                    <span class="chat-chat-time">сейчас</span>
+                                    <span class="chat-unread-badge" id="chatUnreadCount">0</span>
+                                </div>
+                            </div>
+                            
+
+                            <div class="chat-chat-item" data-chat="japan">
+                                <div class="chat-chat-avatar">🗼️</div>
+                                <div class="chat-chat-info">
+                                    <div class="chat-chat-name">Япония</div>
+                                    <div class="chat-chat-preview">Кто был в Токио?</div>
+                                </div>
+                                <div class="chat-chat-meta">
+                                    <span class="chat-chat-time">12:30</span>
+                                </div>
+                            </div>
+                            
+
+                            <div class="chat-chat-item" data-chat="france">
+                                <div class="chat-chat-avatar">🗽</div>
+                                <div class="chat-chat-info">
+                                    <div class="chat-chat-name">Франция</div>
+                                    <div class="chat-chat-preview">Париж прекрасен!</div>
+                                </div>
+                                <div class="chat-chat-meta">
+                                    <span class="chat-chat-time">11:45</span>
+                                </div>
+                            </div>
+                            
+
+                            <div class="chat-chat-item" data-chat="italy">
+                                <div class="chat-chat-avatar">🏛️</div>
+                                <div class="chat-chat-info">
+                                    <div class="chat-chat-name">Италия</div>
+                                    <div class="chat-chat-preview">Венеция ждёт!</div>
+                                </div>
+                                <div class="chat-chat-meta">
+                                    <span class="chat-chat-time">10:20</span>
+                                </div>
+                            </div>
+                            
+
+                            <div class="chat-chat-item" data-chat="uk">
+                                <div class="chat-chat-avatar">🏰</div>
+                                <div class="chat-chat-info">
+                                    <div class="chat-chat-name">Великобритания</div>
+                                    <div class="chat-chat-preview">Лондон встречает!</div>
+                                </div>
+                                <div class="chat-chat-meta">
+                                    <span class="chat-chat-time">09:15</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Онлайн пользователи -->
+                    <div class="chat-online-section">
+                        <h3 class="chat-section-title">В сети</h3>
+                        <div class="chat-online-users" id="chatOnlineUsers">
+                            <div class="loading-users">Загрузка...</div>
+                        </div>
+                    </div>
+
+                    <!-- Статистика -->
+                    <div class="chat-stats-section">
+                        <h3 class="chat-section-title">Статистика</h3>
+                        <div class="chat-stats">
+                            <div class="chat-stat-item">
+                                <span class="chat-stat-label">Пользователей онлайн:</span>
+                                <span class="chat-stat-value" id="chatOnlineCount">0</span>
+                            </div>
+                            <div class="chat-stat-item">
+                                <span class="chat-stat-label">Сообщений сегодня:</span>
+                                <span class="chat-stat-value" id="chatMessageCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Основная область чата -->
+            <main class="chat-main-content">
+                <!-- Header чата -->
+                <header class="chat-header">
+                    <div class="chat-info">
+                        <div class="current-chat">
+                            <div class="chat-avatar-large">💬</div>
+                            <div class="chat-details">
+                                <h2 class="chat-title">Общий чат</h2>
+                                <p class="chat-subtitle" id="chatStatus">Подключение...</p>
+                            </div>
+                        </div>
+                        <div class="chat-actions">
+                            <button class="chat-action-btn" onclick="toggleChatSearch()">
+                                <span class="chat-action-icon">🔍</span>
+                            </button>
+                            <button class="chat-action-btn" onclick="toggleChatTheme()">
+                                <span class="chat-action-icon" id="chatThemeIcon">🌙</span>
+                            </button>
+                            <button class="chat-action-btn" onclick="toggleChatSound()">
+                                <span class="chat-action-icon" id="chatSoundIcon">🔊</span>
+                            </button>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Область сообщений -->
+                <div class="chat-messages-container">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-welcome-message">
+                            <div class="chat-welcome-icon">🌍</div>
+                            <h3>Добро пожаловать в чат AliveAgain!</h3>
+                            <p>Присоединяйтесь к общению с путешественниками со всего мира</p>
+                            <div class="chat-welcome-tips">
+                                <p>💡 <strong>Советы:</strong></p>
+                                <ul>
+                                    <li>Представьтесь, когда впервые заходите в чат</li>
+                                    <li>Расскажите о своих путешествиях</li>
+                                    <li>Задавайте вопросы о странах, которые интересуют</li>
+                                    <li>Будьте дружелюбны и открыты к общению</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Область ввода -->
+                <div class="chat-input-area">
+                    <div class="chat-user-status-bar" id="chatUserStatusBar">
+                        <span class="chat-status-indicator offline"></span>
+                        <span class="chat-status-text">Гость</span>
+                        <button class="chat-login-btn" onclick="showChatAuthModal()">Войти для общения</button>
+                    </div>
+
+                    <div class="chat-input-container">
+                        <button class="chat-attach-btn" onclick="attachChatFile()">
+                            <span class="chat-attach-icon">📎</span>
+                        </button>
+                        
+                        <div class="chat-input-wrapper">
+                            <textarea 
+                                id="chatMessageInput" 
+                                placeholder="Напишите сообщение..." 
+                                class="chat-message-input"
+                                disabled
+                                rows="1"
+                            ></textarea>
+                            <button class="chat-emoji-btn" onclick="toggleChatEmojiPanel()">😊</button>
+                        </div>
+                        
+                        <button class="chat-send-btn" id="chatSendButton" onclick="sendChatMessage()" disabled>
+                            <span class="chat-send-icon">➤</span>
+                        </button>
+                    </div>
+                    
+                    <!-- Панель эмодзи -->
+                    <div class="chat-emoji-panel" id="chatEmojiPanel" style="display: none;">
+                        <div class="chat-emoji-grid">
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('😊')">😊</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('😂')">😂</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('❤️')">❤️</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('👍')">👍</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('🌍')">🌍</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('✈️')">✈️</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('🗼️')">🗼️</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('🏛️')">🏛️</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('🎭')">🎭</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('🍜')">🍜</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('🎌')">🎌</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('⛩️')">⛩️</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('🗽')">🗽</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('🏰')">🏰</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('🎨')">🎨</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('📸')">📸</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('🤝')">🤝</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('💡')">💡</span>
+                            <span class="chat-emoji-item" onclick="insertChatEmoji('🎯')">🎯</span>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- Модальное окно авторизации -->
+        <div id="chatAuthModal" class="chat-modal-overlay">
+            <div class="chat-modal-content">
+                <div class="chat-modal-header">
+                    <h2>Вход в чат</h2>
+                    <button class="chat-close-btn" onclick="closeChatAuthModal()">✕</button>
+                </div>
+                
+                <div class="chat-auth-tabs">
+                    <button class="chat-tab-btn active" onclick="switchChatAuthTab('login')">Вход</button>
+                    <button class="chat-tab-btn" onclick="switchChatAuthTab('register')">Регистрация</button>
+                </div>
+                
+                <!-- Форма входа -->
+                <form id="chatLoginForm" class="chat-auth-form">
+                    <div class="chat-form-group">
+                        <label>Email</label>
+                        <input type="email" id="chatLoginEmail" placeholder="your@email.com" required>
+                    </div>
+                    <div class="chat-form-group">
+                        <label>Пароль</label>
+                        <input type="password" id="chatLoginPassword" placeholder="•••••••" required>
+                    </div>
+                    <button type="submit" class="chat-submit-btn">Войти</button>
+                </form>
+                
+                <!-- Форма регистрации -->
+                <form id="chatRegisterForm" class="chat-auth-form" style="display: none;">
+                    <div class="chat-form-group">
+                        <label>Имя</label>
+                        <input type="text" id="chatRegisterName" placeholder="Ваше имя" required>
+                    </div>
+                    <div class="chat-form-group">
+                        <label>Email</label>
+                        <input type="email" id="chatRegisterEmail" placeholder="your@email.com" required>
+                    </div>
+                    <div class="chat-form-group">
+                        <label>Пароль</label>
+                        <input type="password" id="chatRegisterPassword" placeholder="Минимум 6 символов" required>
+                    </div>
+                    <button type="submit" class="chat-submit-btn">Зарегистрироваться</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Project Section -->
+    <section class="project-section">
+        <div class="project-container">
+            <div class="project-content">
+                <div class="project-text">
+                    <h2>О проекте AliveAgain</h2>
+                    <p>
+                        AliveAgain - это инновационный проект, который открывает мир виртуальных путешествий 
+                        для детей с ограниченной мобильностью. Мы верим, что каждый ребенок заслуживает возможность 
+                        мечтать, исследовать и чувствовать себя свободными.
+                    </p>
+                    
+                    <div class="features">
+                        <div class="feature-item">
+                            <div class="feature-icon">🥽</div>
+                            <div class="feature-content">
+                                <h4>VR технологии</h4>
+                                <p>Полное погружение в виртуальный мир</p>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">🌍</div>
+                            <div class="feature-content">
+                                <h4>Мир без границ</h4>
+                                <p>Доступ к любым уголкам планеты</p>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">👥</div>
+                            <div class="feature-content">
+                                <h4>Общение</h4>
+                                <p>Преодоление одиночества через общие впечатления</p>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">🎯</div>
+                            <div class="feature-content">
+                                <h4>Доступность</h4>
+                                <p>Возможность увидеть мир для каждого ребенка</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="project-visual">
+                    <div class="project-image">
+                        <div style="text-align: center; color: white; font-size: 3rem;">
+                            🌍✈️🥽
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
         </div>
     </main>
 

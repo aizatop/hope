@@ -75,26 +75,21 @@ window.switchToLogin = function() {
 
 // Функция открытия мессенджера
 window.openMessenger = function() {
-    console.log('Открытие мессенджера');
-    window.open('index-messenger.html', '_blank');
 }
 
 // Функция открытия отдельной страницы чата
-window.openStandaloneChat = function() {
-    console.log('Открытие отдельной страницы чата');
-    window.open('chat-standalone.html', '_blank');
+function openStandaloneChat() {
+    window.location.href = 'chat-standalone.html';
 }
 
 // Функция открытия публичного чата
-window.openPublicChat = function() {
-    console.log('Открытие публичного чата');
-    window.open('public-chat.html', '_blank');
+function openPublicChat() {
+    window.location.href = 'public-chat.html';
 }
 
 // Функция открытия чата зарегистрированных пользователей
-window.openChat = function() {
-    console.log('Открытие чата');
-    window.open('chat.html', '_blank');
+function openChat() {
+    window.location.href = 'chat.html';
 }
 
 // Функция прокрутки к странам
