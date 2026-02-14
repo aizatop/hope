@@ -340,151 +340,209 @@
         </div>
     </main>
 
-    <!-- Чат Section -->
-    <section class="chat-section" id="chat">
-        <div class="chat-container">
-            <aside class="chat-sidebar">
-                <!-- Логотип -->
-                <div class="chat-sidebar-header">
-                    <div class="chat-logo">
-                        <span class="chat-logo-icon">🌍</span>
-                        <span class="chat-logo-text">AliveAgain</span>
+    <!-- Новый Мессенджер Section -->
+    <section class="messenger-section" id="messenger">
+        <div class="messenger-container">
+            <!-- Левая панель -->
+            <div class="messenger-sidebar">
+                <!-- Заголовок -->
+                <div class="messenger-header">
+                    <div class="messenger-logo">
+                        <span class="messenger-logo-icon">💬</span>
+                        <span class="messenger-logo-text">AliveAgain</span>
+                    </div>
+                    <div class="messenger-actions">
+                        <button class="messenger-action-btn">🔍</button>
+                        <button class="messenger-action-btn">📝</button>
                     </div>
                 </div>
 
-                <!-- Пользователь -->
-                <div class="chat-user-profile" id="chatUserProfile">
-                    <div class="chat-user-avatar">
-                        <span class="avatar-placeholder">?</span>
+                <!-- Пользовательский профиль -->
+                <div class="messenger-profile">
+                    <div class="messenger-avatar">
+                        <img src="https://picsum.photos/seed/user1/40/40" alt="User">
                     </div>
-                    <div class="chat-user-info">
-                        <div class="chat-user-name">Гость</div>
-                        <div class="chat-user-status">Не в сети</div>
+                    <div class="messenger-user-info">
+                        <div class="messenger-username">Александр</div>
+                        <div class="messenger-status">online</div>
                     </div>
                 </div>
 
                 <!-- Список чатов -->
-                <div class="chat-sidebar-content">
-                    <div class="chat-item active">
-                        <div class="chat-avatar">💬</div>
-                        <div class="chat-details">
-                            <div class="chat-name">Общий чат</div>
-                            <div class="chat-message">Добро пожаловать в AliveAgain!</div>
+                <div class="messenger-chats">
+                    <div class="messenger-chat-item active">
+                        <div class="messenger-chat-avatar">
+                            <img src="https://picsum.photos/seed/chat1/50/50" alt="Chat">
                         </div>
-                        <div class="chat-time">сейчас</div>
+                        <div class="messenger-chat-info">
+                            <div class="messenger-chat-name">Общий чат</div>
+                            <div class="messenger-chat-message">Привет всем! 👋</div>
+                        </div>
+                        <div class="messenger-chat-meta">
+                            <div class="messenger-chat-time">12:30</div>
+                            <div class="messenger-chat-badge">3</div>
+                        </div>
                     </div>
 
-                    <div class="chat-item">
-                        <div class="chat-avatar">🗼️</div>
-                        <div class="chat-details">
-                            <div class="chat-name">Япония</div>
-                            <div class="chat-message">Кто был в Токио?</div>
+                    <div class="messenger-chat-item">
+                        <div class="messenger-chat-avatar">
+                            <img src="https://picsum.photos/seed/chat2/50/50" alt="Chat">
                         </div>
-                        <div class="chat-time">15:30</div>
+                        <div class="messenger-chat-info">
+                            <div class="messenger-chat-name">Мария</div>
+                            <div class="messenger-chat-message">Как дела?</div>
+                        </div>
+                        <div class="messenger-chat-meta">
+                            <div class="messenger-chat-time">11:45</div>
+                            <div class="messenger-chat-badge">1</div>
+                        </div>
                     </div>
 
-                    <div class="chat-item">
-                        <div class="chat-avatar">🇫🇷</div>
-                        <div class="chat-details">
-                            <div class="chat-name">Франция</div>
-                            <div class="chat-message">Эйфелева башня</div>
+                    <div class="messenger-chat-item">
+                        <div class="messenger-chat-avatar">
+                            <img src="https://picsum.photos/seed/chat3/50/50" alt="Chat">
                         </div>
-                        <div class="chat-time">14:20</div>
+                        <div class="messenger-chat-info">
+                            <div class="messenger-chat-name">Команда проекта</div>
+                            <div class="messenger-chat-message">Новые обновления 🎉</div>
+                        </div>
+                        <div class="messenger-chat-meta">
+                            <div class="messenger-chat-time">10:20</div>
+                        </div>
                     </div>
 
-                    <div class="chat-item">
-                        <div class="chat-avatar">🇬🇧</div>
-                        <div class="chat-details">
-                            <div class="chat-name">Великобритания</div>
-                            <div class="chat-message">Лондонский глаз</div>
+                    <div class="messenger-chat-item">
+                        <div class="messenger-chat-avatar">
+                            <img src="https://picsum.photos/seed/chat4/50/50" alt="Chat">
                         </div>
-                        <div class="chat-time">13:45</div>
+                        <div class="messenger-chat-info">
+                            <div class="messenger-chat-name">Иван</div>
+                            <div class="messenger-chat-message">Встречаемся завтра?</div>
+                        </div>
+                        <div class="messenger-chat-meta">
+                            <div class="messenger-chat-time">09:15</div>
+                        </div>
                     </div>
 
-                    <div class="chat-item">
-                        <div class="chat-avatar">🇺🇸</div>
-                        <div class="chat-details">
-                            <div class="chat-name">США</div>
-                            <div class="chat-message">Статуя Свободы</div>
+                    <div class="messenger-chat-item">
+                        <div class="messenger-chat-avatar">
+                            <img src="https://picsum.photos/seed/chat5/50/50" alt="Chat">
                         </div>
-                        <div class="chat-time">12:30</div>
-                    </div>
-
-                    <div class="chat-item">
-                        <div class="chat-avatar">🇮🇱</div>
-                        <div class="chat-details">
-                            <div class="chat-name">Италия</div>
-                            <div class="chat-message">Колизей</div>
+                        <div class="messenger-chat-info">
+                            <div class="messenger-chat-name">Елена</div>
+                            <div class="messenger-chat-message">Спасибо за помощь! 🙏</div>
                         </div>
-                        <div class="chat-time">11:15</div>
+                        <div class="messenger-chat-meta">
+                            <div class="messenger-chat-time">вчера</div>
+                        </div>
                     </div>
                 </div>
-            </aside>
+            </div>
 
             <!-- Основная область чата -->
-            <main class="chat-main">
-                <!-- Заголовок чата -->
-                <div class="chat-header">
-                    <div class="chat-avatar">💬</div>
-                    <div class="chat-header-info">
-                        <div class="chat-header-name">Общий чат</div>
-                        <div class="chat-header-status">5 участников</div>
+            <div class="messenger-main">
+                <!-- Верхняя панель -->
+                <div class="messenger-chat-header">
+                    <div class="messenger-chat-info">
+                        <div class="messenger-chat-avatar">
+                            <img src="https://picsum.photos/seed/activechat/40/40" alt="Chat">
+                        </div>
+                        <div class="messenger-chat-details">
+                            <div class="messenger-chat-title">Общий чат</div>
+                            <div class="messenger-chat-subtitle">5 участников</div>
+                        </div>
                     </div>
-                    <div class="chat-header-actions">
-                        <button class="chat-header-action">🔍</button>
-                        <button class="chat-header-action">📞</button>
-                        <button class="chat-header-action">⋮</button>
+                    <div class="messenger-chat-actions">
+                        <button class="messenger-chat-action">�</button>
+                        <button class="messenger-chat-action">�</button>
+                        <button class="messenger-chat-action">ℹ️</button>
                     </div>
                 </div>
 
-                <!-- Сообщения -->
-                <div class="chat-messages" id="chatMessages">
-                    <div class="chat-message-bubble received">
-                        <div class="chat-message-content">
-                            <div class="chat-message-text">Добро пожаловать в чат AliveAgain! 👋</div>
-                            <div class="chat-message-time">10:00</div>
+                <!-- Область сообщений -->
+                <div class="messenger-messages" id="messengerMessages">
+                    <div class="messenger-date-divider">
+                        <span>Сегодня</span>
+                    </div>
+
+                    <div class="messenger-message">
+                        <div class="messenger-message-avatar">
+                            <img src="https://picsum.photos/seed/msg1/32/32" alt="User">
+                        </div>
+                        <div class="messenger-message-content">
+                            <div class="messenger-message-header">
+                                <span class="messenger-message-author">Мария</span>
+                                <span class="messenger-message-time">12:15</span>
+                            </div>
+                            <div class="messenger-message-text">
+                                Всем привет! Как проходит день? 😊
+                            </div>
                         </div>
                     </div>
 
-                    <div class="chat-message-bubble sent">
-                        <div class="chat-message-content">
-                            <div class="chat-message-text">Привет! Рад быть здесь! 🌍</div>
-                            <div class="chat-message-time">10:02</div>
+                    <div class="messenger-message own">
+                        <div class="messenger-message-content">
+                            <div class="messenger-message-header">
+                                <span class="messenger-message-time">12:20</span>
+                            </div>
+                            <div class="messenger-message-text">
+                                Привет! Отлично, работаю над проектом
+                            </div>
                         </div>
                     </div>
 
-                    <div class="chat-message-bubble received">
-                        <div class="chat-message-content">
-                            <div class="chat-message-text">Это удивительный проект для виртуальных путешествий! 🎯</div>
-                            <div class="chat-message-time">10:05</div>
+                    <div class="messenger-message">
+                        <div class="messenger-message-avatar">
+                            <img src="https://picsum.photos/seed/msg2/32/32" alt="User">
+                        </div>
+                        <div class="messenger-message-content">
+                            <div class="messenger-message-header">
+                                <span class="messenger-message-author">Иван</span>
+                                <span class="messenger-message-time">12:25</span>
+                            </div>
+                            <div class="messenger-message-text">
+                                Замечательно! Удачи с проектом! 💪
+                            </div>
                         </div>
                     </div>
 
-                    <div class="chat-message-bubble sent">
-                        <div class="chat-message-content">
-                            <div class="chat-message-text">Да, очень интересно! Как это работает?</div>
-                            <div class="chat-message-time">10:07</div>
+                    <div class="messenger-message">
+                        <div class="messenger-message-avatar">
+                            <img src="https://picsum.photos/seed/msg3/32/32" alt="User">
+                        </div>
+                        <div class="messenger-message-content">
+                            <div class="messenger-message-header">
+                                <span class="messenger-message-author">Елена</span>
+                                <span class="messenger-message-time">12:30</span>
+                            </div>
+                            <div class="messenger-message-text">
+                                Привет всем! 👋 Кто хочет обсудить новые идеи?
+                            </div>
                         </div>
                     </div>
 
-                    <div class="chat-message-bubble received">
-                        <div class="chat-message-content">
-                            <div class="chat-message-text">Мы используем VR технологии, чтобы дети могли исследовать мир из дома 🏠</div>
-                            <div class="chat-message-time">10:10</div>
+                    <div class="messenger-message own">
+                        <div class="messenger-message-content">
+                            <div class="messenger-message-header">
+                                <span class="messenger-message-time">12:35</span>
+                            </div>
+                            <div class="messenger-message-text">
+                                Я готов! У меня есть несколько предложений 🎯
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Область ввода -->
-                <div class="chat-input-area">
-                    <div class="chat-input-container">
-                        <button class="chat-input-action">📎</button>
-                        <input type="text" class="chat-input" id="chatInput" placeholder="Напишите сообщение...">
-                        <button class="chat-input-action">😊</button>
-                        <button class="chat-input-action chat-send-btn" id="chatSendBtn">➤</button>
+                <div class="messenger-input-area">
+                    <div class="messenger-input-container">
+                        <button class="messenger-input-btn">📎</button>
+                        <input type="text" class="messenger-input" placeholder="Напишите сообщение...">
+                        <button class="messenger-input-btn">😊</button>
+                        <button class="messenger-send-btn">➤</button>
                     </div>
                 </div>
-            </main>
+            </div>
         </div>
     </section>
 

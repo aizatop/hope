@@ -1465,8 +1465,8 @@ html {
     }
 }
 
-/* Telegram-Style Beige Chat Section */
-.chat-section {
+/* Новый Мессенджер Section */
+.messenger-section {
     padding: 0;
     background: #f0f2f5;
     min-height: 100vh;
@@ -1475,8 +1475,7 @@ html {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* Telegram-Style Chat Container */
-.chat-container {
+.messenger-container {
     max-width: 100%;
     margin: 0;
     background: #f0f2f5;
@@ -1484,196 +1483,173 @@ html {
     display: flex;
     height: 100vh;
     position: relative;
-    border-radius: 0;
-    box-shadow: none;
 }
 
-/* Telegram-Style Sidebar */
-.chat-sidebar {
-    width: 320px;
-    background: #f0f2f5;
-    color: #111b21;
+/* Левая панель мессенджера */
+.messenger-sidebar {
+    width: 350px;
+    background: #ffffff;
+    border-right: 1px solid #e9edef;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #e9edef;
     position: relative;
-    overflow: hidden;
 }
 
-/* Telegram-Style Header */
-.chat-sidebar-header {
+/* Заголовок мессенджера */
+.messenger-header {
     background: #f0f2f5;
     padding: 16px 20px;
     border-bottom: 1px solid #e9edef;
-    position: relative;
-    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.chat-logo {
+.messenger-logo {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 0;
 }
 
-.chat-logo-icon {
-    font-size: 24px;
-    filter: none;
-    animation: none;
-    color: #111b21;
+.messenger-logo-icon {
+    font-size: 28px;
+    color: #00a884;
 }
 
-.chat-logo-text {
+.messenger-logo-text {
     font-size: 20px;
     font-weight: 600;
     color: #111b21;
-    background: none;
-    -webkit-text-fill-color: #111b21;
-    text-shadow: none;
-    animation: none;
 }
 
-.back-to-countries {
-    display: none;
+.messenger-actions {
+    display: flex;
+    gap: 8px;
 }
 
-/* Telegram-Style User Profile */
-.chat-user-profile {
+.messenger-action-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: #54656f;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.messenger-action-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Профиль пользователя */
+.messenger-profile {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e9edef;
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 16px 20px;
-    background: #f0f2f5;
-    border-bottom: 1px solid #e9edef;
-    margin-bottom: 0;
-    border: none;
-    position: relative;
-    z-index: 2;
-    transition: background-color 0.2s;
     cursor: pointer;
+    transition: background-color 0.2s;
 }
 
-.chat-user-profile:hover {
+.messenger-profile:hover {
     background: #f5f6f7;
 }
 
-.chat-user-avatar {
+.messenger-avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #d4a574 0%, #e6b3b3 50%, #f5e6d3 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 14px;
-    border: none;
-    position: relative;
     overflow: hidden;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    animation: none;
 }
 
-.chat-user-avatar::before,
-.chat-user-avatar::after {
-    display: none;
+.messenger-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.avatar-placeholder {
-    color: #fff;
-    position: relative;
-    z-index: 3;
-    text-shadow: none;
-    animation: none;
-}
-
-.chat-user-info {
+.messenger-user-info {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
 }
 
-.chat-user-name {
+.messenger-username {
     font-size: 16px;
     font-weight: 600;
     color: #111b21;
-    margin: 0;
+    margin-bottom: 2px;
 }
 
-.chat-user-status {
+.messenger-status {
     font-size: 13px;
-    color: #8696a0;
+    color: #00a884;
 }
 
-/* Telegram-Style Sidebar Content */
-.chat-sidebar-content {
+/* Список чатов */
+.messenger-chats {
     flex: 1;
     overflow-y: auto;
-    padding: 0;
     scrollbar-width: thin;
     scrollbar-color: #e9edef transparent;
 }
 
-.chat-sidebar-content::-webkit-scrollbar {
+.messenger-chats::-webkit-scrollbar {
     width: 6px;
 }
 
-.chat-sidebar-content::-webkit-scrollbar-track {
+.messenger-chats::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.chat-sidebar-content::-webkit-scrollbar-thumb {
+.messenger-chats::-webkit-scrollbar-thumb {
     background: #e9edef;
     border-radius: 3px;
 }
 
-.chat-sidebar-content::-webkit-scrollbar-thumb:hover {
+.messenger-chats::-webkit-scrollbar-thumb:hover {
     background: #d1d5db;
 }
 
-/* Telegram-Style Chat Items */
-.chat-item {
+.messenger-chat-item {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 12px 20px;
-    background: #f0f2f5;
-    border-bottom: 1px solid #e9edef;
     cursor: pointer;
     transition: background-color 0.2s;
-    position: relative;
+    border-bottom: 1px solid #f0f2f5;
 }
 
-.chat-item:hover {
+.messenger-chat-item:hover {
     background: #f5f6f7;
 }
 
-.chat-item.active {
+.messenger-chat-item.active {
     background: #e9edef;
 }
 
-.chat-avatar {
-    width: 49px;
-    height: 49px;
+.messenger-chat-avatar {
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #d4a574 0%, #e6b3b3 50%, #f5e6d3 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 16px;
-    color: #fff;
+    overflow: hidden;
     flex-shrink: 0;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-.chat-details {
+.messenger-chat-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.messenger-chat-info {
     flex: 1;
     min-width: 0;
 }
 
-.chat-name {
+.messenger-chat-name {
     font-size: 16px;
     font-weight: 500;
     color: #111b21;
@@ -1683,7 +1659,7 @@ html {
     text-overflow: ellipsis;
 }
 
-.chat-message {
+.messenger-chat-message {
     font-size: 14px;
     color: #8696a0;
     white-space: nowrap;
@@ -1691,11 +1667,444 @@ html {
     text-overflow: ellipsis;
 }
 
-.chat-time {
+.messenger-chat-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+}
+
+.messenger-chat-time {
     font-size: 12px;
     color: #8696a0;
-    margin-left: 8px;
+}
+
+.messenger-chat-badge {
+    background: #00a884;
+    color: white;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+}
+
+/* Основная область чата */
+.messenger-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #efeae2;
+}
+
+/* Верхняя панель чата */
+.messenger-chat-header {
+    background: #f0f2f5;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e9edef;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.messenger-chat-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.messenger-chat-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.messenger-chat-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111b21;
+}
+
+.messenger-chat-subtitle {
+    font-size: 13px;
+    color: #8696a0;
+}
+
+.messenger-chat-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.messenger-chat-action {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: #54656f;
+    font-size: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.messenger-chat-action:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Область сообщений */
+.messenger-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" fill="%23efeae2"/><path d="M0 50Q25 25 50 50T100 50" stroke="%23e9edef" stroke-width="0.5" fill="none" opacity="0.3"/></svg>');
+    background-size: 100px 100px;
+    scrollbar-width: thin;
+    scrollbar-color: #e9edef transparent;
+}
+
+.messenger-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messenger-messages::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.messenger-messages::-webkit-scrollbar-thumb {
+    background: #e9edef;
+    border-radius: 3px;
+}
+
+.messenger-messages::-webkit-scrollbar-thumb:hover {
+    background: #d1d5db;
+}
+
+/* Разделитель даты */
+.messenger-date-divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: #8696a0;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.messenger-date-divider::before,
+.messenger-date-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e9edef;
+}
+
+.messenger-date-divider span {
+    padding: 0 12px;
+}
+
+/* Сообщения */
+.messenger-message {
+    display: flex;
+    margin-bottom: 16px;
+    max-width: 70%;
+}
+
+.messenger-message.own {
+    margin-left: auto;
+    flex-direction: row-reverse;
+}
+
+.messenger-message-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    overflow: hidden;
     flex-shrink: 0;
+}
+
+.messenger-message-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.messenger-message-content {
+    margin-left: 8px;
+    max-width: 100%;
+}
+
+.messenger-message.own .messenger-message-content {
+    margin-left: 0;
+    margin-right: 8px;
+}
+
+.messenger-message-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.messenger-message-author {
+    font-size: 13px;
+    font-weight: 600;
+    color: #111b21;
+}
+
+.messenger-message-time {
+    font-size: 11px;
+    color: #8696a0;
+}
+
+.messenger-message-text {
+    font-size: 14px;
+    color: #111b21;
+    line-height: 1.4;
+    word-wrap: break-word;
+    background: #fff;
+    padding: 8px 12px;
+    border-radius: 7.5px;
+    box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.13);
+    position: relative;
+}
+
+.messenger-message.own .messenger-message-text {
+    background: #dcf8c6;
+}
+
+.messenger-message.own .messenger-message-text::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: -7px;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-left: 7px solid #dcf8c6;
+}
+
+.messenger-message:not(.own) .messenger-message-text::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -7px;
+    width: 0;
+    height: 0;
+    border-top: 7px solid transparent;
+    border-bottom: 7px solid transparent;
+    border-right: 7px solid #fff;
+}
+
+/* Область ввода */
+.messenger-input-area {
+    background: #f0f2f5;
+    padding: 12px 20px;
+    border-top: 1px solid #e9edef;
+}
+
+.messenger-input-container {
+    background: #fff;
+    border-radius: 20px;
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #e9edef;
+}
+
+.messenger-input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    color: #111b21;
+    background: transparent;
+    resize: none;
+    max-height: 100px;
+}
+
+.messenger-input::placeholder {
+    color: #8696a0;
+}
+
+.messenger-input-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: transparent;
+    color: #54656f;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.messenger-input-btn:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.messenger-send-btn {
+    background: #00a884;
+    color: #fff;
+}
+
+.messenger-send-btn:hover {
+    background: #008069;
+}
+
+/* Адаптивность для нового мессенджера */
+@media (max-width: 768px) {
+    .messenger-section {
+        padding: 0;
+        min-height: 100vh;
+    }
+    
+    .messenger-container {
+        height: 100vh;
+        flex-direction: column;
+    }
+    
+    .messenger-sidebar {
+        width: 100%;
+        height: 60px;
+        flex-direction: row;
+        border-right: none;
+        border-bottom: 1px solid #e9edef;
+    }
+    
+    .messenger-header {
+        display: none;
+    }
+    
+    .messenger-profile {
+        padding: 8px 16px;
+        border-bottom: none;
+        border-right: 1px solid #e9edef;
+    }
+    
+    .messenger-avatar {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .messenger-username {
+        font-size: 14px;
+    }
+    
+    .messenger-status {
+        display: none;
+    }
+    
+    .messenger-chats {
+        display: none;
+    }
+    
+    .messenger-main {
+        flex: 1;
+        background: #efeae2;
+    }
+    
+    .messenger-chat-header {
+        padding: 12px 16px;
+    }
+    
+    .messenger-chat-actions {
+        display: none;
+    }
+    
+    .messenger-messages {
+        padding: 12px;
+        background: #efeae2;
+    }
+    
+    .messenger-message {
+        max-width: 85%;
+    }
+    
+    .messenger-input-area {
+        padding: 8px 16px;
+    }
+    
+    .messenger-input-container {
+        padding: 6px 12px;
+    }
+    
+    .messenger-input {
+        font-size: 16px;
+    }
+    
+    .messenger-input-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .messenger-profile {
+        padding: 6px 12px;
+    }
+    
+    .messenger-avatar {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .messenger-username {
+        font-size: 13px;
+    }
+    
+    .messenger-chat-header {
+        padding: 8px 12px;
+    }
+    
+    .messenger-chat-title {
+        font-size: 16px;
+    }
+    
+    .messenger-chat-subtitle {
+        font-size: 12px;
+    }
+    
+    .messenger-messages {
+        padding: 8px;
+    }
+    
+    .messenger-message {
+        max-width: 90%;
+    }
+    
+    .messenger-message-text {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+    
+    .messenger-message-author {
+        font-size: 12px;
+    }
+    
+    .messenger-message-time {
+        font-size: 10px;
+    }
+    
+    .messenger-input-area {
+        padding: 6px 12px;
+    }
+    
+    .messenger-input-container {
+        padding: 4px 8px;
+    }
+    
+    .messenger-input {
+        font-size: 15px;
+    }
+    
+    .messenger-input-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+    }
 }
 
 /* Telegram-Style Main Chat Area */
