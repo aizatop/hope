@@ -1465,8 +1465,8 @@ html {
     }
 }
 
-/* Новый Мессенджер Section */
-.messenger-section {
+/* Правильный Мессенджер Section */
+.chat-section {
     padding: 0;
     background: #f0f2f5;
     min-height: 100vh;
@@ -1475,7 +1475,7 @@ html {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
-.messenger-container {
+.chat-container {
     max-width: 100%;
     margin: 0;
     background: #f0f2f5;
@@ -1485,9 +1485,9 @@ html {
     position: relative;
 }
 
-/* Левая панель мессенджера */
-.messenger-sidebar {
-    width: 350px;
+/* Левая панель */
+.chat-sidebar {
+    width: 320px;
     background: #ffffff;
     border-right: 1px solid #e9edef;
     display: flex;
@@ -1495,56 +1495,35 @@ html {
     position: relative;
 }
 
-/* Заголовок мессенджера */
-.messenger-header {
-    background: #f0f2f5;
+/* Заголовок с логотипом */
+.chat-header {
+    background: #075e54;
     padding: 16px 20px;
-    border-bottom: 1px solid #e9edef;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.messenger-logo {
+    border-bottom: 1px solid #075e54;
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.messenger-logo-icon {
-    font-size: 28px;
-    color: #00a884;
-}
-
-.messenger-logo-text {
-    font-size: 20px;
-    font-weight: 600;
-    color: #111b21;
-}
-
-.messenger-actions {
+.chat-logo {
     display: flex;
-    gap: 8px;
+    align-items: center;
+    gap: 12px;
 }
 
-.messenger-action-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: none;
-    background: transparent;
-    color: #54656f;
+.logo-icon {
+    font-size: 24px;
+    color: #fff;
+}
+
+.logo-text {
     font-size: 18px;
-    cursor: pointer;
-    transition: background-color 0.2s;
+    font-weight: 600;
+    color: #fff;
 }
 
-.messenger-action-btn:hover {
-    background: rgba(0, 0, 0, 0.05);
-}
-
-/* Профиль пользователя */
-.messenger-profile {
+/* Пользовательский профиль */
+.user-profile {
     padding: 16px 20px;
     border-bottom: 1px solid #e9edef;
     display: flex;
@@ -1554,65 +1533,65 @@ html {
     transition: background-color 0.2s;
 }
 
-.messenger-profile:hover {
+.user-profile:hover {
     background: #f5f6f7;
 }
 
-.messenger-avatar {
+.user-avatar {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     overflow: hidden;
 }
 
-.messenger-avatar img {
+.user-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.messenger-user-info {
+.user-info {
     flex: 1;
 }
 
-.messenger-username {
+.user-name {
     font-size: 16px;
     font-weight: 600;
     color: #111b21;
     margin-bottom: 2px;
 }
 
-.messenger-status {
+.user-status {
     font-size: 13px;
     color: #00a884;
 }
 
 /* Список чатов */
-.messenger-chats {
+.chat-list {
     flex: 1;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #e9edef transparent;
 }
 
-.messenger-chats::-webkit-scrollbar {
+.chat-list::-webkit-scrollbar {
     width: 6px;
 }
 
-.messenger-chats::-webkit-scrollbar-track {
+.chat-list::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.messenger-chats::-webkit-scrollbar-thumb {
+.chat-list::-webkit-scrollbar-thumb {
     background: #e9edef;
     border-radius: 3px;
 }
 
-.messenger-chats::-webkit-scrollbar-thumb:hover {
+.chat-list::-webkit-scrollbar-thumb:hover {
     background: #d1d5db;
 }
 
-.messenger-chat-item {
+.chat-item {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -1622,15 +1601,15 @@ html {
     border-bottom: 1px solid #f0f2f5;
 }
 
-.messenger-chat-item:hover {
+.chat-item:hover {
     background: #f5f6f7;
 }
 
-.messenger-chat-item.active {
+.chat-item.active {
     background: #e9edef;
 }
 
-.messenger-chat-avatar {
+.chat-avatar {
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -1638,18 +1617,18 @@ html {
     flex-shrink: 0;
 }
 
-.messenger-chat-avatar img {
+.chat-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.messenger-chat-info {
+.chat-details {
     flex: 1;
     min-width: 0;
 }
 
-.messenger-chat-name {
+.chat-name {
     font-size: 16px;
     font-weight: 500;
     color: #111b21;
@@ -1659,7 +1638,7 @@ html {
     text-overflow: ellipsis;
 }
 
-.messenger-chat-message {
+.chat-message {
     font-size: 14px;
     color: #8696a0;
     white-space: nowrap;
@@ -1667,19 +1646,19 @@ html {
     text-overflow: ellipsis;
 }
 
-.messenger-chat-meta {
+.chat-meta {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 4px;
 }
 
-.messenger-chat-time {
+.chat-time {
     font-size: 12px;
     color: #8696a0;
 }
 
-.messenger-chat-badge {
+.chat-badge {
     background: #00a884;
     color: white;
     font-size: 11px;
@@ -1691,7 +1670,7 @@ html {
 }
 
 /* Основная область чата */
-.messenger-main {
+.chat-main {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -1699,7 +1678,7 @@ html {
 }
 
 /* Верхняя панель чата */
-.messenger-chat-header {
+.chat-main-header {
     background: #f0f2f5;
     padding: 16px 20px;
     border-bottom: 1px solid #e9edef;
@@ -1708,34 +1687,34 @@ html {
     align-items: center;
 }
 
-.messenger-chat-info {
+.chat-info {
     display: flex;
     align-items: center;
     gap: 12px;
 }
 
-.messenger-chat-details {
+.chat-details {
     display: flex;
     flex-direction: column;
 }
 
-.messenger-chat-title {
+.chat-title {
     font-size: 18px;
     font-weight: 600;
     color: #111b21;
 }
 
-.messenger-chat-subtitle {
+.chat-subtitle {
     font-size: 13px;
     color: #8696a0;
 }
 
-.messenger-chat-actions {
+.chat-actions {
     display: flex;
     gap: 8px;
 }
 
-.messenger-chat-action {
+.action-btn {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -1747,12 +1726,12 @@ html {
     transition: background-color 0.2s;
 }
 
-.messenger-chat-action:hover {
+.action-btn:hover {
     background: rgba(0, 0, 0, 0.05);
 }
 
 /* Область сообщений */
-.messenger-messages {
+.messages-container {
     flex: 1;
     overflow-y: auto;
     padding: 20px;
@@ -1762,25 +1741,25 @@ html {
     scrollbar-color: #e9edef transparent;
 }
 
-.messenger-messages::-webkit-scrollbar {
+.messages-container::-webkit-scrollbar {
     width: 6px;
 }
 
-.messenger-messages::-webkit-scrollbar-track {
+.messages-container::-webkit-scrollbar-track {
     background: transparent;
 }
 
-.messenger-messages::-webkit-scrollbar-thumb {
+.messages-container::-webkit-scrollbar-thumb {
     background: #e9edef;
     border-radius: 3px;
 }
 
-.messenger-messages::-webkit-scrollbar-thumb:hover {
+.messages-container::-webkit-scrollbar-thumb:hover {
     background: #d1d5db;
 }
 
 /* Разделитель даты */
-.messenger-date-divider {
+.date-divider {
     display: flex;
     align-items: center;
     margin: 20px 0;
@@ -1790,31 +1769,31 @@ html {
     text-transform: uppercase;
 }
 
-.messenger-date-divider::before,
-.messenger-date-divider::after {
+.date-divider::before,
+.date-divider::after {
     content: '';
     flex: 1;
     height: 1px;
     background: #e9edef;
 }
 
-.messenger-date-divider span {
+.date-divider span {
     padding: 0 12px;
 }
 
 /* Сообщения */
-.messenger-message {
+.message {
     display: flex;
     margin-bottom: 16px;
     max-width: 70%;
 }
 
-.messenger-message.own {
+.message.own {
     margin-left: auto;
     flex-direction: row-reverse;
 }
 
-.messenger-message-avatar {
+.message-avatar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -1822,41 +1801,41 @@ html {
     flex-shrink: 0;
 }
 
-.messenger-message-avatar img {
+.message-avatar img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.messenger-message-content {
+.message-content {
     margin-left: 8px;
     max-width: 100%;
 }
 
-.messenger-message.own .messenger-message-content {
+.message.own .message-content {
     margin-left: 0;
     margin-right: 8px;
 }
 
-.messenger-message-header {
+.message-header {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-bottom: 4px;
 }
 
-.messenger-message-author {
+.message-author {
     font-size: 13px;
     font-weight: 600;
     color: #111b21;
 }
 
-.messenger-message-time {
+.message-time {
     font-size: 11px;
     color: #8696a0;
 }
 
-.messenger-message-text {
+.message-text {
     font-size: 14px;
     color: #111b21;
     line-height: 1.4;
@@ -1868,11 +1847,11 @@ html {
     position: relative;
 }
 
-.messenger-message.own .messenger-message-text {
+.message.own .message-text {
     background: #dcf8c6;
 }
 
-.messenger-message.own .messenger-message-text::before {
+.message.own .message-text::before {
     content: '';
     position: absolute;
     top: 0;
@@ -1884,7 +1863,7 @@ html {
     border-left: 7px solid #dcf8c6;
 }
 
-.messenger-message:not(.own) .messenger-message-text::before {
+.message:not(.own) .message-text::before {
     content: '';
     position: absolute;
     top: 0;
@@ -1897,13 +1876,13 @@ html {
 }
 
 /* Область ввода */
-.messenger-input-area {
+.input-area {
     background: #f0f2f5;
     padding: 12px 20px;
     border-top: 1px solid #e9edef;
 }
 
-.messenger-input-container {
+.input-container {
     background: #fff;
     border-radius: 20px;
     padding: 8px 16px;
@@ -1913,7 +1892,7 @@ html {
     border: 1px solid #e9edef;
 }
 
-.messenger-input {
+.message-input {
     flex: 1;
     border: none;
     outline: none;
@@ -1924,11 +1903,11 @@ html {
     max-height: 100px;
 }
 
-.messenger-input::placeholder {
+.message-input::placeholder {
     color: #8696a0;
 }
 
-.messenger-input-btn {
+.input-btn {
     width: 36px;
     height: 36px;
     border-radius: 50%;
@@ -1940,32 +1919,32 @@ html {
     transition: background-color 0.2s;
 }
 
-.messenger-input-btn:hover {
+.input-btn:hover {
     background: rgba(0, 0, 0, 0.05);
 }
 
-.messenger-send-btn {
+.send-btn {
     background: #00a884;
     color: #fff;
 }
 
-.messenger-send-btn:hover {
+.send-btn:hover {
     background: #008069;
 }
 
-/* Адаптивность для нового мессенджера */
+/* Адаптивность для правильного мессенджера */
 @media (max-width: 768px) {
-    .messenger-section {
+    .chat-section {
         padding: 0;
         min-height: 100vh;
     }
     
-    .messenger-container {
+    .chat-container {
         height: 100vh;
         flex-direction: column;
     }
     
-    .messenger-sidebar {
+    .chat-sidebar {
         width: 100%;
         height: 60px;
         flex-direction: row;
@@ -1973,68 +1952,68 @@ html {
         border-bottom: 1px solid #e9edef;
     }
     
-    .messenger-header {
+    .chat-header {
         display: none;
     }
     
-    .messenger-profile {
+    .user-profile {
         padding: 8px 16px;
         border-bottom: none;
         border-right: 1px solid #e9edef;
     }
     
-    .messenger-avatar {
+    .user-avatar {
         width: 32px;
         height: 32px;
     }
     
-    .messenger-username {
+    .user-name {
         font-size: 14px;
     }
     
-    .messenger-status {
+    .user-status {
         display: none;
     }
     
-    .messenger-chats {
+    .chat-list {
         display: none;
     }
     
-    .messenger-main {
+    .chat-main {
         flex: 1;
         background: #efeae2;
     }
     
-    .messenger-chat-header {
+    .chat-main-header {
         padding: 12px 16px;
     }
     
-    .messenger-chat-actions {
+    .chat-actions {
         display: none;
     }
     
-    .messenger-messages {
+    .messages-container {
         padding: 12px;
         background: #efeae2;
     }
     
-    .messenger-message {
+    .message {
         max-width: 85%;
     }
     
-    .messenger-input-area {
+    .input-area {
         padding: 8px 16px;
     }
     
-    .messenger-input-container {
+    .input-container {
         padding: 6px 12px;
     }
     
-    .messenger-input {
+    .message-input {
         font-size: 16px;
     }
     
-    .messenger-input-btn {
+    .input-btn {
         width: 32px;
         height: 32px;
         font-size: 16px;
@@ -2042,65 +2021,65 @@ html {
 }
 
 @media (max-width: 480px) {
-    .messenger-profile {
+    .user-profile {
         padding: 6px 12px;
     }
     
-    .messenger-avatar {
+    .user-avatar {
         width: 28px;
         height: 28px;
     }
     
-    .messenger-username {
+    .user-name {
         font-size: 13px;
     }
     
-    .messenger-chat-header {
+    .chat-main-header {
         padding: 8px 12px;
     }
     
-    .messenger-chat-title {
+    .chat-title {
         font-size: 16px;
     }
     
-    .messenger-chat-subtitle {
+    .chat-subtitle {
         font-size: 12px;
     }
     
-    .messenger-messages {
+    .messages-container {
         padding: 8px;
     }
     
-    .messenger-message {
+    .message {
         max-width: 90%;
     }
     
-    .messenger-message-text {
+    .message-text {
         padding: 6px 10px;
         font-size: 13px;
     }
     
-    .messenger-message-author {
+    .message-author {
         font-size: 12px;
     }
     
-    .messenger-message-time {
+    .message-time {
         font-size: 10px;
     }
     
-    .messenger-input-area {
+    .input-area {
         padding: 6px 12px;
     }
     
-    .messenger-input-container {
+    .input-container {
         padding: 4px 8px;
     }
     
-    .messenger-input {
+    .message-input {
         font-size: 15px;
     }
     
-    .messenger-input-btn {
+    .input-btn {
         width: 28px;
         height: 28px;
         font-size: 14px;
