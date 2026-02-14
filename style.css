@@ -1993,7 +1993,7 @@ html {
     margin-bottom: 80px;
 }
 
-.hero-content {
+.project-hero-content {
     animation: slideInLeft 1s ease-out;
 }
 
@@ -2008,7 +2008,7 @@ html {
     }
 }
 
-.hero-title {
+.project-hero-title {
     font-family: 'Playfair Display', serif;
     font-size: 4rem;
     font-weight: 700;
@@ -2034,21 +2034,21 @@ html {
     50% { opacity: 0.8; }
 }
 
-.hero-subtitle {
+.project-hero-subtitle {
     font-size: 1.5rem;
     color: #8696a0;
     margin-bottom: 20px;
     font-weight: 300;
 }
 
-.hero-description p {
+.project-hero-description p {
     font-size: 1.1rem;
     color: #111b21;
     line-height: 1.6;
     margin-bottom: 30px;
 }
 
-.hero-visual {
+.project-hero-visual {
     position: relative;
     height: 400px;
     display: flex;
@@ -2056,31 +2056,31 @@ html {
     justify-content: center;
 }
 
-.floating-elements {
+.project-floating-elements {
     position: relative;
     width: 100%;
     height: 100%;
 }
 
-.floating-element {
+.project-floating-element {
     position: absolute;
     font-size: 3rem;
     animation: float 6s ease-in-out infinite;
 }
 
-.floating-element.globe {
+.project-floating-element.globe {
     top: 20%;
     left: 20%;
     animation-delay: 0s;
 }
 
-.floating-element.vr {
+.project-floating-element.vr {
     top: 50%;
     right: 20%;
     animation-delay: 2s;
 }
 
-.floating-element.plane {
+.project-floating-element.plane {
     bottom: 20%;
     left: 50%;
     animation-delay: 4s;
@@ -2428,23 +2428,23 @@ html {
         margin-bottom: 60px;
     }
     
-    .hero-title {
+    .project-hero-title {
         font-size: 3rem;
     }
     
-    .hero-subtitle {
+    .project-hero-subtitle {
         font-size: 1.2rem;
     }
     
-    .hero-description p {
+    .project-hero-description p {
         font-size: 1rem;
     }
     
-    .floating-elements {
+    .project-floating-elements {
         height: 300px;
     }
     
-    .floating-element {
+    .project-floating-element {
         font-size: 2.5rem;
     }
     
@@ -2509,19 +2509,19 @@ html {
         padding: 15px 10px;
     }
     
-    .hero-title {
+    .project-hero-title {
         font-size: 2.5rem;
     }
     
-    .hero-subtitle {
+    .project-hero-subtitle {
         font-size: 1.1rem;
     }
     
-    .floating-elements {
+    .project-floating-elements {
         height: 250px;
     }
     
-    .floating-element {
+    .project-floating-element {
         font-size: 2rem;
     }
     
