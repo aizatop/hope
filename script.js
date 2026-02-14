@@ -213,15 +213,15 @@ function updateChatUserInterface() {
 // Настройка обработчиков событий чата
 function setupChatEventListeners() {
     // Обработчики форм авторизации
-    const loginForm = document.getElementById('chatLoginForm');
-    const registerForm = document.getElementById('chatRegisterForm');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
     
     if (loginForm) {
         loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const email = document.getElementById('chatLoginEmail').value;
-            const password = document.getElementById('chatLoginPassword').value;
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
             
             try {
                 const { data, error } = await chatSupabase.auth.signInWithPassword({
@@ -250,9 +250,9 @@ function setupChatEventListeners() {
         registerForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const name = document.getElementById('chatRegisterName').value;
-            const email = document.getElementById('chatRegisterEmail').value;
-            const password = document.getElementById('chatRegisterPassword').value;
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
             
             try {
                 const { data, error } = await chatSupabase.auth.signUp({
@@ -580,8 +580,8 @@ function closeChatAuthModal() {
 }
 
 function switchChatAuthTab(tab) {
-    const loginForm = document.getElementById('chatLoginForm');
-    const registerForm = document.getElementById('chatRegisterForm');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
     const tabBtns = document.querySelectorAll('.chat-tab-btn');
     
     tabBtns.forEach(btn => btn.classList.remove('active'));
@@ -838,7 +838,7 @@ async function registerUser(name, email, password) {
         console.log('Начало регистрации пользователя...');
         
         // Показываем индикатор загрузки
-        const submitBtn = document.querySelector('#registerForm button[type="submit"]');
+        const submitBtn = registerForm.querySelector('button[type="submit"]');
         const originalText = submitBtn.textContent;
         submitBtn.textContent = 'Регистрация...';
         submitBtn.disabled = true;
@@ -927,7 +927,7 @@ async function registerUser(name, email, password) {
         console.error('Неожиданная ошибка регистрации:', error);
         
         // Восстанавливаем кнопку в случае ошибки
-        const submitBtn = document.querySelector('#registerForm button[type="submit"]');
+        const submitBtn = registerForm.querySelector('button[type="submit"]');
         if (submitBtn) {
             submitBtn.textContent = 'Зарегистрироваться';
             submitBtn.disabled = false;
