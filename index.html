@@ -258,6 +258,48 @@
                 </div>
             </section>
 
+            <!-- Минималистичный чат -->
+            <section class="minimal-chat">
+                <div class="container">
+                    <div class="chat-wrapper">
+                        <div class="chat-header">
+                            <h3 class="chat-title">Чат сообщества</h3>
+                            <span class="chat-status">Открыт для всех</span>
+                        </div>
+                        
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message">
+                                <div class="message-content">
+                                    <span class="message-author">Система</span>
+                                    <p class="message-text">Добро пожаловать в чат AliveAgain! Здесь вы можете общаться с другими участниками сообщества.</p>
+                                    <span class="message-time">12:00</span>
+                                </div>
+                            </div>
+                            
+                            <div class="message">
+                                <div class="message-content">
+                                    <span class="message-author">Анна</span>
+                                    <p class="message-text">Привет всем! Рад быть частью этого сообщества 🌍</p>
+                                    <span class="message-time">12:15</span>
+                                </div>
+                            </div>
+                            
+                            <div class="message own">
+                                <div class="message-content">
+                                    <p class="message-text">Здравствуйте! Очень рад присоединиться к проекту</p>
+                                    <span class="message-time">12:20</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-input">
+                            <input type="text" id="messageInput" placeholder="Напишите сообщение..." maxlength="500">
+                            <button id="sendButton" onclick="sendMessage()">Отправить</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             </div>
     </main>
 
@@ -269,5 +311,6 @@
     </footer>
 
     <script src="script.js"></script>
+<script src="chat.js"></script>
 </body>
 </html>
