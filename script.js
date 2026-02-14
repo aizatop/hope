@@ -1018,7 +1018,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Проверяем наличие элементов
     const registerForm = document.getElementById('registerForm');
     const loginForm = document.getElementById('loginForm');
-    const authButtons = document.querySelector('.auth-buttons');
+    const authButtons = document.getElementById('authButtons');
     
     console.log('Форма регистрации:', registerForm);
     console.log('Форма входа:', loginForm);
@@ -1102,6 +1102,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     // Обновляем интерфейс сразу
                     setTimeout(async () => {
+                        // Даем время на обновление сессии
+                        await new Promise(resolve => setTimeout(resolve, 500));
                         await updateAuthButtons();
                     }, 500);
                 } else if (result.requiresConfirmation) {
@@ -1121,6 +1123,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                         registerForm.reset();
                     
                     setTimeout(async () => {
+                        // Даем время на обновление сессии
+                        await new Promise(resolve => setTimeout(resolve, 500));
                         await updateAuthButtons();
                     }, 1000);
                 }
@@ -1152,6 +1156,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Вход успешен, обновляем кнопки...');
                 // Обновляем кнопки после входа
                 setTimeout(async () => {
+                    // Даем время на обновление сессии
+                    await new Promise(resolve => setTimeout(resolve, 500));
                     await updateAuthButtons();
                 }, 500);
             } else {
@@ -1581,7 +1587,7 @@ window.updateAuthButtons = async function() {
     
     try {
         const session = await checkSession();
-        const authButtons = document.querySelector('.auth-buttons');
+        const authButtons = document.getElementById('authButtons');
         
         console.log('Сессия:', session);
         console.log('Кнопки авторизации элемент:', authButtons);
@@ -1648,7 +1654,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Проверяем наличие элементов
     const registerForm = document.getElementById('registerForm');
     const loginForm = document.getElementById('loginForm');
-    const authButtons = document.querySelector('.auth-buttons');
+    const authButtons = document.getElementById('authButtons');
     
     console.log('Форма регистрации:', registerForm);
     console.log('Форма входа:', loginForm);
