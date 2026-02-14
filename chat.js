@@ -52,11 +52,6 @@ function sendMessage() {
     
     // Прокручиваем чат вниз
     scrollToBottom();
-    
-    // Имитация ответа от другого пользователя
-    setTimeout(() => {
-        simulateResponse();
-    }, 1000 + Math.random() * 2000);
 }
 
 // Функция отображения сообщения
@@ -89,26 +84,6 @@ function displayMessage(message) {
     
     messageDiv.appendChild(messageContent);
     chatMessages.appendChild(messageDiv);
-}
-
-// Функция имитации ответа
-function simulateResponse() {
-    const responses = [
-        { author: 'Мария', text: 'Спасибо за ваше сообщение! 👋' },
-        { author: 'Иван', text: 'Рад видеть вас в нашем чате!' },
-        { author: 'Елена', text: 'Добро пожаловать в сообщество!' },
-        { author: 'Алексей', text: 'Как ваши впечатления от проекта?' },
-        { author: 'София', text: 'Здесь все очень дружные! 🌟' }
-    ];
-    
-    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-    randomResponse.time = new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
-    randomResponse.own = false;
-    
-    messages.push(randomResponse);
-    displayMessage(randomResponse);
-    saveMessages();
-    scrollToBottom();
 }
 
 // Функция сохранения сообщений
